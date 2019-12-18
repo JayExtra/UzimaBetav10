@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "242610792998",
+    "firebase_url": "https://uzima-413c8.firebaseio.com",
+    "project_id": "uzima-413c8",
+    "storage_bucket": "uzima-413c8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:242610792998:android:195f4ca8c726bee440d4e7",
+        "android_client_info": {
+          "package_name": "com.example.uzimabetav10"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "242610792998-c6fsui45fes963t94frbpldvkm9jgcuv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.uzimabetav10",
+            "certificate_hash": "849ecfe49eb77001ddcf0e57df3490a093bd4d13"
+          }
+        },
+        {
+          "client_id": "242610792998-epf75tnd5us1u4uddn2h3io28t8tg2kt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDot2PwVuJ04jVNWcfzB-Z64kBS9YBD0Y8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "242610792998-epf75tnd5us1u4uddn2h3io28t8tg2kt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
