@@ -6,8 +6,19 @@
     android:layout_height="match_parent"
     tools:context=".EmergencyFeeds">
     <include
-        android:id="@+id/main_interface_toolbar"
+        android:id="@+id/single_post_toolbar"
         layout="@layout/toolbar" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/emergency_list_view"
+        android:layout_width="399dp"
+        android:layout_height="778dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/single_post_toolbar"
+        app:layout_constraintVertical_bias="0.0" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/create_post"

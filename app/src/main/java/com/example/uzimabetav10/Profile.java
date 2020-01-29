@@ -12,7 +12,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -44,7 +43,7 @@ public class Profile extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        Toolbar toolbar = findViewById(R.id.main_interface_toolbar);
+        Toolbar toolbar = findViewById(R.id.single_post_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Profile");
 

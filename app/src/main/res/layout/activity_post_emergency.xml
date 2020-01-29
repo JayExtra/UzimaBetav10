@@ -7,7 +7,7 @@
     tools:context=".PostEmergency">
 
     <include
-        android:id="@+id/main_interface_toolbar"
+        android:id="@+id/single_post_toolbar"
         layout="@layout/toolbar" />
 
     <com.google.android.material.textfield.TextInputLayout
@@ -21,7 +21,7 @@
         android:layout_marginRight="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/main_interface_toolbar">
+        app:layout_constraintTop_toBottomOf="@+id/single_post_toolbar">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edit_title"

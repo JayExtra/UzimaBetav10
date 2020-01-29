@@ -32,7 +32,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
@@ -55,19 +54,25 @@ public class EditProfile extends AppCompatActivity {
     private ProgressDialog progressDialog;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
+
+        //instantiate firebase
         FirebaseApp.initializeApp(this);
         mAuth = FirebaseAuth.getInstance();
-        user_id = mAuth.getCurrentUser().getUid();
         firebaseFirestore = FirebaseFirestore.getInstance();
-        storageReference = FirebaseStorage.getInstance().getReference();
 
-        Toolbar toolbar = findViewById(R.id.main_interface_toolbar);
+
+
+        Toolbar toolbar = findViewById(R.id.single_post_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(" Edit your Profile");
+
+
+        user_id =mAuth.getCurrentUser().getUid();
 
         //map widgets
         edit_picture = findViewById(R.id.button_picture);
@@ -321,6 +326,8 @@ public class EditProfile extends AppCompatActivity {
         updateDetails.setEnabled(false);
         progressDialog.setMessage("Loading details...");
         progressDialog.show();
+
+
 
 
 //******checking on data within the database on whether it already exist then fetch the user details and place them in the required fields************

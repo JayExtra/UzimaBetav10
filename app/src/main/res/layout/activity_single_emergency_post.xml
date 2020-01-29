@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SingleEmergencyPost">
+
+    <include
+        android:id="@+id/single_post_toolbar"
+        layout="@layout/toolbar"
+        android:layout_width="421dp"
+        android:layout_height="63dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:titleMarginBottom="0dp" />
+
+    <ImageView
+        android:id="@+id/imageView5"
+        android:layout_width="418dp"
+        android:layout_height="188dp"
+        android:src="@drawable/grey_background"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/single_post_toolbar" />
+
+    <ScrollView
+        android:layout_width="407dp"
+        android:layout_height="549dp"
+        android:fadeScrollbars="false"
+        android:scrollbarAlwaysDrawHorizontalTrack="true"
+        android:scrollbarAlwaysDrawVerticalTrack="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView5">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="589dp">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="700dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="3dp"
+                android:layout_marginEnd="0dp"
+                android:layout_marginRight="0dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="700dp">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/comments_list"
+                        android:layout_width="wrap_content"
+                        android:layout_height="174dp"
+                        android:layout_below="@+id/button_navigate"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginStart="7dp"
+                        android:layout_marginLeft="7dp"
+                        android:layout_marginTop="58dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginRight="10dp"
+                        android:layout_marginBottom="0dp" />
+
+                    <Button
+                        android:id="@+id/button_navigate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/card_description2"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginStart="45dp"
+                        android:layout_marginLeft="45dp"
+                        android:layout_marginTop="27dp"
+                        android:layout_marginEnd="58dp"
+                        android:layout_marginRight="58dp"
+                        android:layout_marginBottom="0dp"
+                        android:background="@color/design_default_color_primary"
+                        android:text="Navigate" />
+
+                    <RelativeLayout
+                        android:layout_width="70dp"
+                        android:layout_height="68dp"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginStart="25dp"
+                        android:layout_marginLeft="23dp"
+                        android:layout_marginTop="16dp"
+                        android:background="#7CB342">
+
+                        <TextView
+                            android:id="@+id/textView23"
+                            android:layout_width="39dp"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentTop="true"
+                            android:layout_marginStart="23dp"
+                            android:layout_marginLeft="23dp"
+                            android:layout_marginTop="11dp"
+                            android:background="#00FFFFFF"
+                            android:text="U"
+                            android:textColor="#FAFFFFFF"
+                            android:textSize="36sp" />
+                    </RelativeLayout>
+
+                    <TextView
+                        android:id="@+id/time_date2"
+                        android:layout_width="200dp"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/textView28"
+
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="84dp"
+                        android:layout_marginRight="84dp"
+                        android:text="time" />
+
+                    <TextView
+                        android:id="@+id/textView28"
+                        android:layout_width="201dp"
+                        android:layout_height="wrap_content"
+
+                        android:layout_below="@+id/textView20"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginStart="88dp"
+                        android:layout_marginLeft="88dp"
+                        android:layout_marginTop="3dp"
+                        android:layout_marginEnd="83dp"
+                        android:layout_marginRight="83dp"
+                        android:text="St John Ambulance HQ" />
+
+                    <TextView
+                        android:id="@+id/textView20"
+                        android:layout_width="216dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentLeft="true"
+
+                        android:layout_alignParentTop="true"
+                        android:layout_marginStart="123dp"
+                        android:layout_marginLeft="123dp"
+                        android:layout_marginTop="16dp"
+                        android:text="Emergency reported at" />
+
+                    <TextView
+                        android:id="@+id/loc_text2"
+                        android:layout_width="250dp"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/time_date2"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_marginStart="22dp"
+                        android:layout_marginLeft="22dp"
+                        android:layout_marginTop="23dp"
+                        android:text="Location" />
+
+                    <TextView
+                        android:id="@+id/card_title2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/loc_text2"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_marginStart="25dp"
+                        android:layout_marginLeft="25dp"
+                        android:layout_marginTop="22dp"
+                        android:text="title"
+                        android:textSize="24sp" />
+
+                    <TextView
+                        android:id="@+id/card_description2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/card_title2"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_marginStart="23dp"
+                        android:layout_marginLeft="23dp"
+                        android:layout_marginTop="21dp"
+                        android:text="lorem ipsum" />
+
+                    <EditText
+                        android:id="@+id/comment_field"
+                        android:layout_width="317dp"
+                        android:layout_height="56dp"
+                        android:layout_below="@+id/comments_list"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_marginStart="22dp"
+                        android:layout_marginLeft="22dp"
+                        android:layout_marginTop="31dp"
+                        android:ems="10"
+                        android:gravity="start|top"
+                        android:hint="comment"
+                        android:inputType="textMultiLine" />
+
+                    <ImageView
+                        android:id="@+id/sendImage"
+                        android:layout_width="41dp"
+                        android:layout_height="49dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentBottom="true"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginEnd="20dp"
+                        android:layout_marginRight="20dp"
+                        android:layout_marginBottom="85dp"
+                        android:layout_toEndOf="@+id/comment_field"
+                        android:layout_toRightOf="@+id/comment_field"
+                        android:src="@drawable/ic_send" />
+
+                    <TextView
+                        android:id="@+id/textView30"
+                        android:layout_width="105dp"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/button_navigate"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_marginStart="19dp"
+                        android:layout_marginLeft="19dp"
+                        android:layout_marginTop="28dp"
+                        android:text="Comments:" />
+                </RelativeLayout>
+            </androidx.cardview.widget.CardView>
+        </RelativeLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

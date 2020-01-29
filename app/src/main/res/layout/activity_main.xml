@@ -7,7 +7,7 @@
     tools:context=".MainActivity">
 
     <include
-        android:id="@+id/main_interface_toolbar"
+        android:id="@+id/single_post_toolbar"
         layout="@layout/toolbar" />
 
     <ImageView
@@ -16,7 +16,7 @@
         android:layout_height="228dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/main_interface_toolbar"
+        app:layout_constraintTop_toBottomOf="@+id/single_post_toolbar"
         app:srcCompat="@drawable/st_jhn" />
 
     <androidx.cardview.widget.CardView
@@ -53,6 +53,57 @@
                 android:text="Emergency news" />
         </RelativeLayout>
     </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/med_id_card"
+        android:layout_width="154dp"
+        android:layout_height="118dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:background="#FB8C00"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.516"
+        app:layout_constraintStart_toEndOf="@+id/emergency_card"
+        app:layout_constraintTop_toBottomOf="@+id/slide_img" >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#FB8C00">
+
+            <TextView
+                android:id="@+id/textView22"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginEnd="11dp"
+                android:layout_marginRight="11dp"
+                android:layout_marginBottom="11dp"
+                android:text="Medical ID" />
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_panic"
+        android:layout_width="105dp"
+        android:layout_height="109dp"
+        android:layout_marginBottom="32dp"
+        android:baselineAlignBottom="false"
+        android:clickable="true"
+        android:src="@drawable/ic_error_black_24dp"
+        app:backgroundTint="#FCF70404"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:scaleType="center"/>
+
+
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
