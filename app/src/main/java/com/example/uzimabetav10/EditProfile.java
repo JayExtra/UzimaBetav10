@@ -32,6 +32,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
@@ -39,6 +40,7 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.util.HashMap;
 import java.util.Map;
+
 
 public class EditProfile extends AppCompatActivity {
 
@@ -64,6 +66,7 @@ public class EditProfile extends AppCompatActivity {
         FirebaseApp.initializeApp(this);
         mAuth = FirebaseAuth.getInstance();
         firebaseFirestore = FirebaseFirestore.getInstance();
+        storageReference = FirebaseStorage.getInstance().getReference();
 
 
 
@@ -147,8 +150,8 @@ public class EditProfile extends AppCompatActivity {
 
 //***sending image to fire base storage together with user details*********
 
-
                 user_id = mAuth.getCurrentUser().getUid();
+
 
 
                 StorageReference image_path = storageReference.child("profile_pictures").child(user_id + ".jpg");

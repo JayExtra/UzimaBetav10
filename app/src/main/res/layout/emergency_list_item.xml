@@ -3,14 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="640dp"
+    android:layout_height="675dp"
     tools:context=".EmergencyFeeds">
 
 
     <androidx.cardview.widget.CardView
         android:id="@+id/post_card"
-        android:layout_width="391dp"
-        android:layout_height="499dp"
+        android:layout_width="392dp"
+        android:layout_height="633dp"
         android:layout_marginLeft="8dp"
         android:layout_marginTop="40dp"
         android:layout_marginRight="8dp"
@@ -129,9 +129,9 @@
                 android:layout_alignParentStart="true"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
-                android:layout_marginStart="1dp"
-                android:layout_marginLeft="1dp"
-                android:layout_marginTop="118dp"
+                android:layout_marginStart="2dp"
+                android:layout_marginLeft="2dp"
+                android:layout_marginTop="184dp"
                 app:srcCompat="@drawable/upload" />
 
             <TextView
@@ -141,9 +141,9 @@
                 android:layout_below="@+id/post_image"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentLeft="true"
-                android:layout_marginStart="27dp"
-                android:layout_marginLeft="27dp"
-                android:layout_marginTop="27dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginLeft="24dp"
+                android:layout_marginTop="54dp"
                 android:text="title"
                 android:textSize="24sp" />
 
@@ -154,9 +154,9 @@
                 android:layout_below="@+id/card_title"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentLeft="true"
-                android:layout_marginStart="23dp"
-                android:layout_marginLeft="23dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginStart="21dp"
+                android:layout_marginLeft="21dp"
+                android:layout_marginTop="21dp"
                 android:text="lorem ipsum" />
 
             <TextView

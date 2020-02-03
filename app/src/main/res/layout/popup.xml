@@ -22,9 +22,9 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/textView13"
-                android:layout_width="wrap_content"
-                android:layout_height="54dp"
+                android:id="@+id/dialog_text"
+                android:layout_width="292dp"
+                android:layout_height="86dp"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
@@ -32,9 +32,9 @@
                 android:layout_alignParentRight="true"
                 android:layout_marginStart="50dp"
                 android:layout_marginLeft="50dp"
-                android:layout_marginTop="46dp"
-                android:layout_marginEnd="38dp"
-                android:layout_marginRight="38dp"
+                android:layout_marginTop="31dp"
+                android:layout_marginEnd="37dp"
+                android:layout_marginRight="37dp"
                 android:text="You are about to call St John Ambulance services, do you wish to proceed?" />
 
             <Button

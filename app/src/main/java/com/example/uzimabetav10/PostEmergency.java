@@ -125,8 +125,8 @@ public class PostEmergency extends AppCompatActivity {
 
         Toast.makeText(this,"Your Location:"+"\n"+"Latitude= "+lat+"\n"+"Longitude= "+log,Toast.LENGTH_SHORT).show();
 
-        final double lat2=Double.parseDouble(lat);
-        final double log2=Double.parseDouble(log);
+        final   Double lat2=Double.parseDouble(lat);
+        final Double log2=Double.parseDouble(log);
 
         final GeoPoint geoPoint=new GeoPoint(lat2,log2);
 

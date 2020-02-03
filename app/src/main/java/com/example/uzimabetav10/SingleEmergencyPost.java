@@ -64,6 +64,7 @@ public class SingleEmergencyPost extends AppCompatActivity {
     private EditText commentField;
     private RecyclerView comment_list_all;
     private CommentsRecyclerAdapter commentsRecyclerAdapter;
+    private GeoPoint locGeo;
 
     private List<Comments>commentsList;
 
@@ -117,6 +118,11 @@ public class SingleEmergencyPost extends AppCompatActivity {
         comment_list_all.setHasFixedSize(true);
         comment_list_all.setLayoutManager(new LinearLayoutManager(this));
         comment_list_all.setAdapter(commentsRecyclerAdapter);
+
+
+        if(locGeo == null){
+            navButton.setVisibility(View.INVISIBLE);
+        }
 
 
         //navigation button
@@ -212,6 +218,39 @@ public class SingleEmergencyPost extends AppCompatActivity {
                         String user_id = task.getResult().getString("user_id");
                         String name2 = task.getResult().getString("name");
 
+                        locGeo = location;
+
+                        if (location == null){
+
+                            Toast.makeText(SingleEmergencyPost.this,"Location was not specified",Toast.LENGTH_SHORT).show();
+                            postLocation.setText("Not Specified");
+
+
+                        }else{
+                            geocoder = new Geocoder(SingleEmergencyPost.this, Locale.getDefault());
+                            lat = location.getLatitude();
+                            lng = location.getLongitude();
+
+                            try {
+
+                                adresses = geocoder.getFromLocation(lat, lng, 1);
+                                String address = adresses.get(0).getAddressLine(0);
+
+                                String fulladdress = address + "";
+                                postAdress = fulladdress;
+
+
+                                //Toast.makeText(MainActivity.this, "Your Location:"+mainAdress, Toast.LENGTH_SHORT).show();
+
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+                        }
+
+
+
+
                         //CONVERT TIMESTAMP TO DATE
                         //String dateString = DateFormat.format("MM/dd/yyyy", new Date(milliseconds)).toString();//gets the date in which the house was posted
                         Date date = post_date.toDate();
@@ -219,26 +258,12 @@ public class SingleEmergencyPost extends AppCompatActivity {
                         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-mm-yyyy hh:mm:ss");
                         String strDate = dateFormat.format(date);
 
+
+
                         //setup geocoder
 
-                        geocoder = new Geocoder(SingleEmergencyPost.this, Locale.getDefault());
-                        lat = location.getLatitude();
-                        lng = location.getLongitude();
-
-                        try {
-
-                            adresses = geocoder.getFromLocation(lat, lng, 1);
-                            String address = adresses.get(0).getAddressLine(0);
-
-                            String fulladdress = address + "";
-                            postAdress = fulladdress;
 
 
-                            //Toast.makeText(MainActivity.this, "Your Location:"+mainAdress, Toast.LENGTH_SHORT).show();
-
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
 
 
 

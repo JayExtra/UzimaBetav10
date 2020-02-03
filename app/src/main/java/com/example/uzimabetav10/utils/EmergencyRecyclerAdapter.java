@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -39,6 +40,7 @@ public class EmergencyRecyclerAdapter extends RecyclerView.Adapter<EmergencyRecy
     public Context context;
     List<Address>adresses;
     Geocoder geocoder;
+
 
     public EmergencyRecyclerAdapter(List<EmergencyPosts>emergency_list){
 
@@ -84,31 +86,42 @@ public class EmergencyRecyclerAdapter extends RecyclerView.Adapter<EmergencyRecy
         holder.setDate(dateString);
 
         GeoPoint locgeoPoint = emergency_list.get(position).getLocation();
-            Double lat = locgeoPoint.getLatitude();
-            Double lng = locgeoPoint.getLongitude();
 
-        //setup geocoder
+        if (locgeoPoint == null){
 
-        geocoder = new Geocoder(context, Locale.getDefault());
+            Toast.makeText(context,"Location error",Toast.LENGTH_SHORT).show();
 
-        try {
-
-            adresses = geocoder.getFromLocation(lat,lng,1);
-            String address = adresses.get(0).getAddressLine(0);
-
-            String fulladdress=  address+"";
-
-            holder.setLocation(fulladdress);
+        }else{
 
 
+            double lat = locgeoPoint.getLatitude();
+            double lng = locgeoPoint.getLongitude();
+            //setup geocoder
 
-            //Toast.makeText(MainActivity.this, "Your Location:"+mainAdress, Toast.LENGTH_SHORT).show();
+            geocoder = new Geocoder(context, Locale.getDefault());
+
+            try {
+
+                adresses = geocoder.getFromLocation(lat,lng,1);
+                String address = adresses.get(0).getAddressLine(0);
+
+                String fulladdress=  address+"";
+
+                holder.setLocation(fulladdress);
 
 
 
-        } catch (IOException e) {
-            e.printStackTrace();
+                //Toast.makeText(MainActivity.this, "Your Location:"+mainAdress, Toast.LENGTH_SHORT).show();
+
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+
+
+
 
 
         holder.postCardView.setOnClickListener(new View.OnClickListener() {
@@ -124,7 +137,7 @@ public class EmergencyRecyclerAdapter extends RecyclerView.Adapter<EmergencyRecy
 
 
         //Get Likes Count
-        firebaseFirestore.collection("Emergency_Posts/" + emergencyPostId + "/comments").addSnapshotListener( new EventListener<QuerySnapshot>() {
+        firebaseFirestore.collection("Emergency_Feeds/" + emergencyPostId + "/comments").addSnapshotListener( new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 

@@ -15,6 +15,24 @@
         <item>O-</item>
     </string-array>
 
+    <string-array name="incident">
+        <item>Unknown</item>
+        <item>Road Traffic Accident</item>
+        <item>Fainted</item>
+        <item>Collapsed</item>
+        <item>Non-responsive</item>
+        <item>Breathing Difficulty</item>
+        <item>Sweating</item>
+        <item>Bleeding</item>
+        <item>Not breathing</item>
+        <item>Not talking</item>
+        <item>Unconcious</item>
+        <item>Seizure</item>
+        <item>Choking</item>
+        <item>Chest pain</item>
+        <item>Burn Injury</item>
+    </string-array>
+
     <string-array name="age">
         <item>Age</item>
         <item>16</item>

@@ -184,7 +184,7 @@ public class EmergencyFeeds extends AppCompatActivity {
 
         //retrieve firebase posts
 
-        Query firstQuery = firebaseFirestore.collection("Emergency_Posts").orderBy("timestamp",Query.Direction.DESCENDING).limit(3);
+        Query firstQuery = firebaseFirestore.collection("Emergency_Feeds").orderBy("timestamp",Query.Direction.DESCENDING).limit(3);
 
        firstQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
@@ -233,7 +233,7 @@ public class EmergencyFeeds extends AppCompatActivity {
 
         //retrieve firebase posts
 
-        Query nextQuery = firebaseFirestore.collection("Emergency_Posts")
+        Query nextQuery = firebaseFirestore.collection("Emergency_Feeds")
                 .orderBy("timestamp",Query.Direction.DESCENDING)
                 .startAfter(lastVisible)
                 .limit(3);

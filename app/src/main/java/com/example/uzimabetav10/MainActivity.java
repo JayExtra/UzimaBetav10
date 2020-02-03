@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ProgressDialog progressDialog;
     private FirebaseAuth mAuth;
-    private CardView emergencyCard, medIdCard;
+    private CardView emergencyCard, medIdCard,ambulanceCard;
     private ImageView slideshow;
     private FloatingActionButton panicActionButton;
     private String user_id;
@@ -80,7 +80,8 @@ public class MainActivity extends AppCompatActivity {
 
         //map widgets
         emergencyCard = findViewById(R.id.emergency_card);
-        medIdCard = findViewById(R.id.med_id_card);
+        //medIdCard = findViewById(R.id.med_id_card);
+        ambulanceCard = findViewById(R.id.ambulance_card);
         slideshow = findViewById(R.id.slide_img);
         panicActionButton = findViewById(R.id.fab_panic);
 
@@ -116,11 +117,21 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        medIdCard.setOnClickListener(new View.OnClickListener() {
+        //medIdCard.setOnClickListener(new View.OnClickListener() {
+           // @Override
+            //public void onClick(View view) {
+               // Intent emergencyIntent = new Intent(MainActivity.this, MedicalID.class);
+               // startActivity(emergencyIntent);
+            //}
+        //});
+
+        ambulanceCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent emergencyIntent = new Intent(MainActivity.this, MedicalID.class);
-                startActivity(emergencyIntent);
+                Intent ambulance = new Intent(MainActivity.this,AmbulanceRequests.class);
+                ambulance.putExtra("LATITUDE",latitude);
+                ambulance.putExtra("LONGITUDE",longitude);
+                startActivity(ambulance);
             }
         });
 

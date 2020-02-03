@@ -19,7 +19,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".SingleEmergencyPost"></activity>
+        <activity android:name=".AmbulanceRequests"></activity>
+        <activity android:name=".SingleEmergencyPost" />
         <activity android:name=".FlashingActivity" />
         <activity android:name=".EditMedId" />
         <activity
