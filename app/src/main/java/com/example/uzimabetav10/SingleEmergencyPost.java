@@ -134,7 +134,7 @@ public class SingleEmergencyPost extends AppCompatActivity {
         });
 
         //retrieve comments from database
-        firebaseFirestore.collection("Emergency_Posts/"+emergency_post_id+"/comments")
+        firebaseFirestore.collection("Emergency_Feeds/"+emergency_post_id+"/comments")
                 .addSnapshotListener(SingleEmergencyPost.this,new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
@@ -181,7 +181,7 @@ public class SingleEmergencyPost extends AppCompatActivity {
                     commentMap.put("timestamp", FieldValue.serverTimestamp());
 
 
-                    firebaseFirestore.collection("Emergency_Posts/"+emergency_post_id+"/comments").add(commentMap).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                    firebaseFirestore.collection("Emergency_Feeds/"+emergency_post_id+"/comments").add(commentMap).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
                         @Override
                         public void onComplete(@NonNull Task<DocumentReference> task) {
                             if(!task.isSuccessful()){
@@ -200,7 +200,7 @@ public class SingleEmergencyPost extends AppCompatActivity {
 
 
         //retrieve post details
-        DocumentReference docRef = firebaseFirestore.collection("Emergency_Posts").document(emergency_post_id);
+        DocumentReference docRef = firebaseFirestore.collection("Emergency_Feeds").document(emergency_post_id);
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override

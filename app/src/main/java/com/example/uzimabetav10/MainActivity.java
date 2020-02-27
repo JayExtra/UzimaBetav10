@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ProgressDialog progressDialog;
     private FirebaseAuth mAuth;
-    private CardView emergencyCard, medIdCard,ambulanceCard;
+    private CardView emergencyCard, medIdCard,ambulanceCard,walletCard,deploymentCard;
     private ImageView slideshow;
     private FloatingActionButton panicActionButton;
     private String user_id;
@@ -80,6 +80,8 @@ public class MainActivity extends AppCompatActivity {
 
         //map widgets
         emergencyCard = findViewById(R.id.emergency_card);
+        walletCard = findViewById(R.id.wallet_card);
+        deploymentCard = findViewById(R.id.deployments_card);
         //medIdCard = findViewById(R.id.med_id_card);
         ambulanceCard = findViewById(R.id.ambulance_card);
         slideshow = findViewById(R.id.slide_img);
@@ -132,6 +134,20 @@ public class MainActivity extends AppCompatActivity {
                 ambulance.putExtra("LATITUDE",latitude);
                 ambulance.putExtra("LONGITUDE",longitude);
                 startActivity(ambulance);
+            }
+        });
+
+        walletCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this, Wallet.class));
+            }
+        });
+
+        deploymentCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this, Deployments.class));
             }
         });
 

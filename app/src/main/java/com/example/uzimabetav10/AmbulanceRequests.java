@@ -40,7 +40,7 @@ import java.util.Map;
 
 public class AmbulanceRequests extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
-    private TextView numberText, descriptionText;
+    private TextView numberText, descriptionText , ambulanceTxt;
     private Spinner incidentSpinner;
     private Button sendButton, buttonCancel,buttonYes;
     String incident_type;
@@ -48,6 +48,7 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
     private FirebaseAuth mAuth;
     private FirebaseFirestore firebaseFirestore;
     private String user_id;
+
     String lat , lng;
     Dialog myDialog;
 
@@ -87,6 +88,8 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
         descriptionText = findViewById(R.id.description_text);
         incidentSpinner = findViewById(R.id.spinner_incident);
         sendButton = findViewById(R.id.send_button);
+        ambulanceTxt = findViewById(R.id.ambulance_txt);
+
 
         //setupp spinner adapter
 
@@ -94,6 +97,13 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
         incidentAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         incidentSpinner.setAdapter(incidentAdapter);
         incidentSpinner.setOnItemSelectedListener(this);
+
+        ambulanceTxt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(AmbulanceRequests.this,AmbulanceCover.class));
+            }
+        });
 
 
 
