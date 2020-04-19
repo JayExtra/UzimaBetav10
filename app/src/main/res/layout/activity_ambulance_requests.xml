@@ -13,8 +13,8 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/reuest_ambulance"
-        android:layout_width="384dp"
-        android:layout_height="553dp"
+        android:layout_width="383dp"
+        android:layout_height="581dp"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginTop="36dp"
@@ -71,16 +71,36 @@
 
             <Button
                 android:id="@+id/send_button"
-                android:layout_width="194dp"
-                android:layout_height="64dp"
+                android:layout_width="158dp"
+                android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentLeft="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
                 android:layout_alignParentBottom="true"
-                android:layout_marginStart="99dp"
-                android:layout_marginLeft="99dp"
-                android:layout_marginBottom="69dp"
+                android:layout_marginStart="119dp"
+                android:layout_marginLeft="119dp"
+                android:layout_marginEnd="107dp"
+                android:layout_marginRight="107dp"
+                android:layout_marginBottom="107dp"
                 android:background="#D81B60"
                 android:text="Send" />
+
+            <Button
+                android:id="@+id/else_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="92dp"
+                android:layout_marginLeft="92dp"
+                android:layout_marginEnd="80dp"
+                android:layout_marginRight="80dp"
+                android:layout_marginBottom="31dp"
+                android:text="Request for someone else" />
         </RelativeLayout>
     </androidx.cardview.widget.CardView>
 

@@ -19,7 +19,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Deployments"></activity>
+        <activity android:name=".Deployments" />
         <activity android:name=".Wallet" />
         <activity android:name=".CoverPayment" />
         <activity android:name=".AmbulanceCover" />

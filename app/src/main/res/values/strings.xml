@@ -20,6 +20,12 @@
         <item>Mpesa</item>
     </string-array>
 
+    <string-array name="gender">
+        <item>None</item>
+        <item>Male</item>
+        <item>Female</item>
+    </string-array>
+
     <string-array name="period">
         <item>1</item>
         <item>2</item>
@@ -28,9 +34,18 @@
         <item>5</item>
     </string-array>
 
+    <string-array name="County">
+        <item>Nairobi</item>
+        <item>Kiambu</item>
+        <item>Mombasa</item>
+        <item>Nakuru</item>
+        <item>Kisumu</item>
+    </string-array>
+
+
 
     <string-array name="incident">
-        <item>Unknown</item>
+        <item>Type of Incident</item>
         <item>Road Traffic Accident</item>
         <item>Fainted</item>
         <item>Collapsed</item>
@@ -98,6 +113,5 @@
         <item>62</item>
         <item>63</item>
     </string-array>
-    >
 
 </resources>

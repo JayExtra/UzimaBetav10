@@ -22,10 +22,13 @@ import android.widget.Toast;
 
 import com.example.uzimabetav10.utils.EmergencyPosts;
 import com.example.uzimabetav10.utils.EmergencyRecyclerAdapter;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -51,6 +54,7 @@ public class EmergencyFeeds extends AppCompatActivity {
     private EmergencyRecyclerAdapter emergencyRecyclerAdapter;
     private DocumentSnapshot lastVisible;
     private Boolean isFirstPageFirstLoad = true;
+    private Button buttonOkay;
 
     private List<EmergencyPosts> emergency_list;
 
@@ -69,6 +73,9 @@ public class EmergencyFeeds extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         user_id = firebaseAuth.getCurrentUser().getUid();
         firebaseFirestore = FirebaseFirestore.getInstance();
+
+        //check account suspension
+        checkForSuspension();
 
         number="+254759783805";
 
@@ -282,6 +289,69 @@ public class EmergencyFeeds extends AppCompatActivity {
             String dial= "tel:" + number;
             startActivity(new Intent(Intent.ACTION_CALL, Uri.parse(dial)));
         }
+
+    }
+
+    public void checkForSuspension(){
+
+        DocumentReference docRef = firebaseFirestore.collection("Suspended_Accounts").document(user_id);
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    // progressDialog.dismiss();
+                    DocumentSnapshot document = task.getResult();
+                    assert document != null;
+                    if (document.exists()) {
+                        String name2 = task.getResult().getString("name");
+
+                        myDialog.setContentView(R.layout.popup_suspended);
+                        buttonOkay=(Button) myDialog.findViewById(R.id.okay_btn);
+
+
+
+                        buttonOkay.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                finish();
+                                System.exit(0);
+                            }
+                        });
+
+
+
+                        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                        myDialog.show();
+
+
+
+
+                        //Toast.makeText(MainActivity.this, "Welcome back " + name2, Toast.LENGTH_LONG).show();
+
+
+//19-10-1996
+                    } else {
+
+                        //progressDialog.dismiss();
+
+                        Toast.makeText(EmergencyFeeds.this, "DATA DOES NOT EXISTS,PLEASE CREATE YOUR PROFILE", Toast.LENGTH_LONG).show();
+                        //startActivity(new Intent(EmergencyFeeds.this, EditProfile.class));
+
+
+                    }
+                } else {
+
+                    String error = task.getException().getMessage();
+                    Toast.makeText(EmergencyFeeds.this, "(FIRESTORE RETRIEVE ERROR):" + error, Toast.LENGTH_LONG).show();
+
+
+                }
+
+
+            }
+        });
+
+
 
     }
 }

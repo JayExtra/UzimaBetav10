@@ -8,6 +8,8 @@ import androidx.appcompat.widget.Toolbar;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -34,25 +36,34 @@ import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
 
 public class PostEmergency extends AppCompatActivity {
-    private TextInputEditText titleText,detailsText;
+    private TextInputEditText titleText, detailsText;
     private ImageView imageSelect;
     private Button sendButton;
-    private Uri postImageUri1=null;
+    private Uri postImageUri1 = null;
 
     private FirebaseAuth firebaseAuth;
     private FirebaseFirestore firebaseFirestore;
     private StorageReference storageReference;
-    private String current_user_id;
+    private String current_user_id , userArea, userCity;
 
     private ProgressDialog progressDialog;
-    public static final int MAX_LENGTH=100;
+    public static final int MAX_LENGTH = 100;
     private Double lat, lng;
+
+    List<Address> adresses;
+    Geocoder geocoder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,24 +71,21 @@ public class PostEmergency extends AppCompatActivity {
         setContentView(R.layout.activity_post_emergency);
 
 
-
         firebaseAuth = FirebaseAuth.getInstance();
         FirebaseApp.initializeApp(PostEmergency.this);
         storageReference = FirebaseStorage.getInstance().getReference();
         firebaseFirestore = FirebaseFirestore.getInstance();
 
-        current_user_id=firebaseAuth.getCurrentUser().getUid();
+        current_user_id = firebaseAuth.getCurrentUser().getUid();
 
 
         //setup widgets
-        titleText=findViewById(R.id.edit_title);
-        detailsText=findViewById(R.id.edit_details);
-        imageSelect=findViewById(R.id.image_select);
-        sendButton=findViewById(R.id.button_send);
+        titleText = findViewById(R.id.edit_title);
+        detailsText = findViewById(R.id.edit_details);
+        imageSelect = findViewById(R.id.image_select);
+        sendButton = findViewById(R.id.button_send);
 
-        progressDialog=new ProgressDialog(this);
-
-
+        progressDialog = new ProgressDialog(this);
 
 
         //Toolbar settings
@@ -93,7 +101,6 @@ public class PostEmergency extends AppCompatActivity {
                 startActivity(new Intent(PostEmergency.this, EmergencyFeeds.class));
             }
         });
-
 
 
         imageSelect.setOnClickListener(new View.OnClickListener() {
@@ -116,21 +123,49 @@ public class PostEmergency extends AppCompatActivity {
 
     private void SendTodDatabase() {
 
-        final String title= titleText.getText().toString();
-        final String details= detailsText.getText().toString();
+        final String title = titleText.getText().toString();
+        final String details = detailsText.getText().toString();
 
-        Intent retrieveIntent= getIntent();
-        final String lat= retrieveIntent.getStringExtra("LATITUDE");
-        final String log= retrieveIntent.getStringExtra("LONGITUDE");
+        Intent retrieveIntent = getIntent();
+        final String lat = retrieveIntent.getStringExtra("LATITUDE");
+        final String log = retrieveIntent.getStringExtra("LONGITUDE");
 
-        Toast.makeText(this,"Your Location:"+"\n"+"Latitude= "+lat+"\n"+"Longitude= "+log,Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Your Location:" + "\n" + "Latitude= " + lat + "\n" + "Longitude= " + log, Toast.LENGTH_SHORT).show();
 
-        final   Double lat2=Double.parseDouble(lat);
-        final Double log2=Double.parseDouble(log);
+        final Double lat2 = Double.parseDouble(lat);
+        final Double log2 = Double.parseDouble(log);
 
-        final GeoPoint geoPoint=new GeoPoint(lat2,log2);
+        final GeoPoint geoPoint = new GeoPoint(lat2, log2);
 
 
+        geocoder = new Geocoder(this, Locale.getDefault());
+
+        Date c = Calendar.getInstance().getTime();
+        Toast.makeText(this,"The current time is:"+c,Toast.LENGTH_SHORT).show();
+
+        SimpleDateFormat df = new SimpleDateFormat("dd-M-yyyy");
+        final String formattedDate = df.format(c);
+
+        try {
+
+            adresses = geocoder.getFromLocation(lat2, log2, 1);
+            String address = adresses.get(0).getAddressLine(0);
+
+            String fulladdress = address + "";
+            //String area = adresses.get(0).getLocality();
+            String city = adresses.get(0).getAdminArea();
+
+           // userArea = area;
+            userCity = city;
+
+
+
+            Toast.makeText(PostEmergency.this, "Your area:"+userArea, Toast.LENGTH_SHORT).show();
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
 
 
@@ -180,6 +215,9 @@ public class PostEmergency extends AppCompatActivity {
                                                 houseMap.put("timestamp", FieldValue.serverTimestamp());
                                                 houseMap.put("location",geoPoint);
                                                 houseMap.put("name",name2);
+                                                //houseMap.put("area",userArea);
+                                                houseMap.put("county",userCity);
+                                                houseMap.put("post_date" , formattedDate);
 
                                                 final Map<String,Object> notificationMap =new HashMap<>();
                                                 notificationMap.put("title",title);
@@ -311,6 +349,8 @@ public class PostEmergency extends AppCompatActivity {
                             houseMap.put("location",geoPoint);
                             houseMap.put("house_image_uri",null);
                             houseMap.put("name",name2);
+                            //houseMap.put("area",userArea);
+                            houseMap.put("county",userCity);
 
 
 

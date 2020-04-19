@@ -29,7 +29,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 public class Profile extends AppCompatActivity {
     private Button buttonEdit;
-    private TextView nameTxt,emailTxt,numberTxt,useridTxt;
+    private TextView nameTxt,emailTxt,numberTxt,useridTxt,genderTxt,dobTxt,countyTxt,locationTxt,ageTxt;
     private ImageView setupImage2;
     private FirebaseAuth firebaseAuth;
     private Uri mainImageURI=null;
@@ -52,8 +52,8 @@ public class Profile extends AppCompatActivity {
         user_id = firebaseAuth.getCurrentUser().getUid();
         firebaseFirestore = FirebaseFirestore.getInstance();
 
-        progressBarProfile = findViewById(R.id.progress_profile);
         progressDialog=new ProgressDialog(this);
+
 
 
 
@@ -64,10 +64,15 @@ public class Profile extends AppCompatActivity {
         numberTxt=findViewById(R.id.number_txt);
         useridTxt=findViewById(R.id.user_id_txt);
         setupImage2=findViewById(R.id.image_user);
+        genderTxt=findViewById(R.id.gender_txt);
+        dobTxt=findViewById(R.id.dob_txt);
+        countyTxt=findViewById(R.id.county_txt);
+        locationTxt=findViewById(R.id.location_txt);
+        ageTxt=findViewById(R.id.age_txt);
 
 
 
-        progressBarProfile.setVisibility(View.VISIBLE);
+
 
         retrieveProfile();
 
@@ -115,6 +120,11 @@ public class Profile extends AppCompatActivity {
                         String user_id = task.getResult().getString("user_id");
                         String email2 = task.getResult().getString("email");
                         String image2= task.getResult().getString("image");
+                        String age= task.getResult().getString("user_age");
+                        String dob= task.getResult().getString("date_of_birth");
+                        String gender= task.getResult().getString("gender");
+                        String county= task.getResult().getString("county");
+                        String location= task.getResult().getString("location");
 
 
                         mainImageURI = Uri.parse(image2);
@@ -125,6 +135,12 @@ public class Profile extends AppCompatActivity {
                         nameTxt.setText(name2);
                         numberTxt.setText(number);
                         useridTxt.setText(user_id);
+                        ageTxt.setText(age);
+                        dobTxt.setText(dob);
+                        genderTxt.setText(gender);
+                        countyTxt.setText(county);
+                        locationTxt.setText(location);
+
 
 
 
@@ -154,7 +170,6 @@ public class Profile extends AppCompatActivity {
 
                 }
 
-                progressBarProfile.setVisibility(View.INVISIBLE);
 
             }
         });

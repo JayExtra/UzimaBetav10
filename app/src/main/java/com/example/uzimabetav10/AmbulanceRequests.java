@@ -9,12 +9,16 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,22 +39,32 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.storage.FirebaseStorage;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class AmbulanceRequests extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
-    private TextView numberText, descriptionText , ambulanceTxt;
-    private Spinner incidentSpinner;
-    private Button sendButton, buttonCancel,buttonYes;
-    String incident_type;
+    private TextView numberText, ambulanceTxt;
+    private Spinner incidentSpinner, incidentPopupSpinner;
+    private Button sendButton, buttonCancel,buttonYes,buttonElse, buttonSend , buttonOkay;
+    String incident_type,incident_type2;
     private ProgressDialog progressDialog;
     private FirebaseAuth mAuth;
     private FirebaseFirestore firebaseFirestore;
-    private String user_id;
+    private String user_id,  userCity;
+    private EditText descText ,descriptionText,patientName,latText,longText,phoneNum;
 
+    private ImageView backImage;
     String lat , lng;
-    Dialog myDialog;
+    Dialog myDialog, myDialog2;
+    List<Address> adresses;
+    Geocoder geocoder;
 
 
 
@@ -65,12 +79,16 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
         user_id = mAuth.getCurrentUser().getUid();
         firebaseFirestore = FirebaseFirestore.getInstance();
 
+        //check if user is suspended
+        checkForSuspension();
+
         //toolbar setup
         Toolbar toolbar = findViewById(R.id.single_post_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Ambulance Services");
 
         myDialog=new Dialog(this);
+        myDialog2 =new Dialog(this);
 
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
 
@@ -89,6 +107,7 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
         incidentSpinner = findViewById(R.id.spinner_incident);
         sendButton = findViewById(R.id.send_button);
         ambulanceTxt = findViewById(R.id.ambulance_txt);
+        buttonElse = findViewById(R.id.else_button);
 
 
         //setupp spinner adapter
@@ -112,6 +131,7 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
         Intent retrieveIntent= getIntent();
         lat= retrieveIntent.getStringExtra("LATITUDE");
         lng= retrieveIntent.getStringExtra("LONGITUDE");
+
 
 
         sendButton.setOnClickListener(new View.OnClickListener() {
@@ -145,6 +165,179 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
 
                 myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 myDialog.show();
+
+
+            }
+        });
+
+        //ambulance for somebody else popup
+        buttonElse.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                myDialog2.setContentView(R.layout.popup_ambulance);
+                buttonSend=(Button) myDialog2.findViewById(R.id.button_send_popup);
+                incidentPopupSpinner = (Spinner) myDialog2.findViewById(R.id.spinner_situation);
+                backImage = (ImageView) myDialog2.findViewById(R.id.back_arrow);
+                descText = myDialog2.findViewById(R.id.descrption_words);
+                patientName = myDialog2.findViewById(R.id.patient_text);
+                latText = myDialog2.findViewById(R.id.lat_txt);
+                longText = myDialog2.findViewById(R.id.long_txt);
+                phoneNum = myDialog2.findViewById(R.id.phone_num);
+
+
+
+                //final String description = descText.getText().toString();
+                //final String patient = patientName.getText().toString();
+
+
+
+
+
+
+
+                ArrayAdapter<CharSequence> incidentAdapter = ArrayAdapter.createFromResource(myDialog2.getContext(),R.array.incident,android.R.layout.simple_spinner_item);
+                incidentAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                incidentPopupSpinner.setAdapter(incidentAdapter);
+                incidentPopupSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                        // your code here
+                        Spinner spin = (Spinner)parentView;
+                        if(spin.getId() == R.id.spinner_situation)
+                        {
+                            String txt = parentView.getItemAtPosition(position).toString();
+                            incident_type2=txt;
+
+                            Toast.makeText(myDialog.getContext(),"Incident selected is"+incident_type2,Toast.LENGTH_SHORT).show();
+
+
+
+
+                        }
+
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parentView) {
+                        // your code here
+                        Toast.makeText(myDialog.getContext(),"Please specify Incident",Toast.LENGTH_SHORT).show();
+                    }
+
+                });
+
+                backImage.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        myDialog2.dismiss();
+                    }
+                });
+                buttonSend.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        progressDialog.setMessage("Sending emergency Details...");
+                        progressDialog.show();
+
+                        //updateDatabase();
+
+                        final String description = descText.getText().toString();
+                        final String patient = patientName.getText().toString();
+                        final String latitude= latText.getText().toString();
+                        final String longitude = longText.getText().toString();
+                        final String phone = phoneNum.getText().toString();
+
+                        Date c = Calendar.getInstance().getTime();
+                       Toast.makeText(myDialog2.getContext(),"The current time is:"+c,Toast.LENGTH_SHORT).show();
+
+                        SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
+                        String formattedDate = df.format(c);
+
+
+
+
+
+
+                        Toast.makeText(myDialog.getContext(),"Patient details are" + patient+description,Toast.LENGTH_SHORT).show();
+
+
+                        final double lat2=Double.parseDouble(latitude);
+                        final double log2=Double.parseDouble(longitude);
+
+                        final GeoPoint geopoint = new GeoPoint(lat2,log2);
+
+                        geocoder = new Geocoder(myDialog2.getContext(), Locale.getDefault());
+
+                        try {
+
+                            adresses = geocoder.getFromLocation(lat2, log2, 1);
+                            String address = adresses.get(0).getAddressLine(0);
+
+                            String fulladdress = address + "";
+                            //String area = adresses.get(0).getLocality();
+                            String city = adresses.get(0).getAdminArea();
+
+                            // userArea = area;
+                            userCity = city;
+
+
+
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+
+                        Map<String, Object> userMap= new HashMap<>();
+
+                        userMap.put("name",patient);
+                        userMap.put("phone_number",phone);
+                        userMap.put("email",null);
+                        userMap.put("location",geopoint);
+                        userMap.put("incident",incident_type2);
+                        userMap.put("description",description);
+                        userMap.put("user_id",user_id);
+                        userMap.put("county",userCity);
+                        userMap.put("time", formattedDate);
+
+
+                        firebaseFirestore.collection("Ambulance_Requests").document()
+                                .set(userMap)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Toast.makeText(AmbulanceRequests.this,"Ambulance request sent",Toast.LENGTH_LONG).show();
+
+                                        descText.setText("");
+                                        progressDialog.dismiss();
+                                        myDialog2.dismiss();
+
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+
+                                        Toast.makeText(AmbulanceRequests.this,"FIRESTORE ERROR: COULD NOT SEND",Toast.LENGTH_LONG).show();
+
+                                        finish();
+
+                                    }
+
+
+
+
+                                });
+
+                    }
+                });
+
+
+
+
+
+                myDialog2.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                myDialog2.show();
+
 
 
             }
@@ -187,6 +380,33 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
 
         final GeoPoint geopoint = new GeoPoint(lat2,log2);
 
+        geocoder = new Geocoder(this, Locale.getDefault());
+
+        Date c = Calendar.getInstance().getTime();
+        Toast.makeText(this,"The current time is:"+c,Toast.LENGTH_SHORT).show();
+
+        SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
+        final String formattedDate = df.format(c);
+
+
+        try {
+
+            adresses = geocoder.getFromLocation(lat2, log2, 1);
+            String address = adresses.get(0).getAddressLine(0);
+
+            String fulladdress = address + "";
+            //String area = adresses.get(0).getLocality();
+            String city = adresses.get(0).getAdminArea();
+
+            // userArea = area;
+            userCity = city;
+
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         //retrieve user details
 
         DocumentReference docRef = firebaseFirestore.collection("users").document(user_id);
@@ -215,7 +435,8 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
                         userMap.put("incident",incident_type);
                         userMap.put("description",descriptionTxt);
                         userMap.put("user_id",user_id);
-                        userMap.put("time", FieldValue.serverTimestamp());
+                        userMap.put("county",userCity);
+                        userMap.put("time", formattedDate);
 
 
                         firebaseFirestore.collection("Ambulance_Requests").document()
@@ -271,4 +492,75 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
 
 
     }
-}
+
+    public void checkForSuspension(){
+
+        DocumentReference docRef = firebaseFirestore.collection("Suspended_Accounts").document(user_id);
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    // progressDialog.dismiss();
+                    DocumentSnapshot document = task.getResult();
+                    assert document != null;
+                    if (document.exists()) {
+                        String name2 = task.getResult().getString("name");
+
+                        myDialog.setContentView(R.layout.popup_suspended);
+                        buttonOkay=(Button) myDialog.findViewById(R.id.okay_btn);
+
+
+
+                        buttonOkay.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                finish();
+                                System.exit(0);
+                            }
+                        });
+
+
+
+                        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                        myDialog.show();
+
+
+
+
+                        //Toast.makeText(MainActivity.this, "Welcome back " + name2, Toast.LENGTH_LONG).show();
+
+
+//19-10-1996
+                    } else {
+
+                        //progressDialog.dismiss();
+
+                        Toast.makeText(AmbulanceRequests.this, "DATA DOES NOT EXISTS,PLEASE CREATE YOUR PROFILE", Toast.LENGTH_LONG).show();
+                       // startActivity(new Intent(AmbulanceRequests.this, EditProfile.class));
+
+
+                    }
+                } else {
+
+                    String error = task.getException().getMessage();
+                    Toast.makeText(AmbulanceRequests.this, "(FIRESTORE RETRIEVE ERROR):" + error, Toast.LENGTH_LONG).show();
+
+
+                }
+
+
+            }
+        });
+
+
+
+    }
+
+
+
+    }
+
+
+
+
+

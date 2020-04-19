@@ -1,6 +1,8 @@
 package com.example.uzimabetav10;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -8,15 +10,20 @@ import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.app.Dialog;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.telephony.SmsManager;
@@ -24,32 +31,49 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 
 public class MainActivity extends AppCompatActivity {
 
     private ProgressDialog progressDialog;
     private FirebaseAuth mAuth;
-    private CardView emergencyCard, medIdCard,ambulanceCard,walletCard,deploymentCard;
-    private ImageView slideshow;
+    private CardView emergencyCard, medIdCard, ambulanceCard, walletCard, deploymentCard;
+    private ImageView slideshow , circleImage;
     private FloatingActionButton panicActionButton;
     private String user_id;
     private FirebaseFirestore firebaseFirestore;
+
+    private Button buttonOkay;
+
+    Dialog myDialog;
 
     //private RequestQueue requestQueue;
 
@@ -57,9 +81,9 @@ public class MainActivity extends AppCompatActivity {
 
     private LocationManager locationManager;
     String latitude, longitude;
-    String number1, number2,mainAdress;
+    String number1, number2, mainAdress;
 
-    List<Address>adresses;
+    List<Address> adresses;
     Geocoder geocoder;
 
 
@@ -74,9 +98,52 @@ public class MainActivity extends AppCompatActivity {
         user_id = mAuth.getCurrentUser().getUid();
         firebaseFirestore = FirebaseFirestore.getInstance();
 
-        //initialize volley object
-       // requestQueue = Volley.newRequestQueue(this);
+        myDialog=new Dialog(this);
 
+        //initialize volley object
+        // requestQueue = Volley.newRequestQueue(this);
+
+        //check if user is signed in
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            // User is signed in
+
+            String status = "online";
+            String device = "mobile";
+
+            DocumentReference usersRef = firebaseFirestore.collection("users").document(user_id);
+
+// Set the "isCapital" field of the city 'DC'
+            usersRef
+                    .update("status", status,
+                            "device",device)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                           Toast.makeText(MainActivity.this,"Logged in",Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+
+                            Toast.makeText(MainActivity.this,"Failed",Toast.LENGTH_SHORT).show();
+
+                        }
+                    });
+        } else {
+            // No user is signed in
+        }
+
+        //check if user is suspended
+        checkForSuspension();
+
+
+        //check if user has profile
+        checkIfUserExists();
+
+        //listen for changes
+        emergencyListener();
 
         //map widgets
         emergencyCard = findViewById(R.id.emergency_card);
@@ -86,6 +153,7 @@ public class MainActivity extends AppCompatActivity {
         ambulanceCard = findViewById(R.id.ambulance_card);
         slideshow = findViewById(R.id.slide_img);
         panicActionButton = findViewById(R.id.fab_panic);
+        circleImage = findViewById(R.id.check_news);
 
 
         //setup geocoder
@@ -110,8 +178,11 @@ public class MainActivity extends AppCompatActivity {
         progressDialog = new ProgressDialog(this);
 
         emergencyCard.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onClick(View view) {
+
+                circleImage.setImageDrawable(MainActivity.this.getDrawable(R.mipmap.ic_check_grey));
                 Intent emergencyIntent = new Intent(MainActivity.this, EmergencyFeeds.class);
                 emergencyIntent.putExtra("LATITUDE", latitude);
                 emergencyIntent.putExtra("LONGITUDE", longitude);
@@ -120,19 +191,19 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //medIdCard.setOnClickListener(new View.OnClickListener() {
-           // @Override
-            //public void onClick(View view) {
-               // Intent emergencyIntent = new Intent(MainActivity.this, MedicalID.class);
-               // startActivity(emergencyIntent);
-            //}
+        // @Override
+        //public void onClick(View view) {
+        // Intent emergencyIntent = new Intent(MainActivity.this, MedicalID.class);
+        // startActivity(emergencyIntent);
+        //}
         //});
 
         ambulanceCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent ambulance = new Intent(MainActivity.this,AmbulanceRequests.class);
-                ambulance.putExtra("LATITUDE",latitude);
-                ambulance.putExtra("LONGITUDE",longitude);
+                Intent ambulance = new Intent(MainActivity.this, AmbulanceRequests.class);
+                ambulance.putExtra("LATITUDE", latitude);
+                ambulance.putExtra("LONGITUDE", longitude);
                 startActivity(ambulance);
             }
         });
@@ -156,7 +227,7 @@ public class MainActivity extends AppCompatActivity {
             public boolean onLongClick(View view) {
 
 
-                getAddress();
+                //getAddress();
                 sendMessage();
 
 
@@ -269,6 +340,30 @@ public class MainActivity extends AppCompatActivity {
                 return true;
 
             case R.id.logout:
+
+                String status = "offline";
+                String device = "mobile";
+
+                DocumentReference usersRef = firebaseFirestore.collection("users").document(user_id);
+
+// Set the "isCapital" field of the city 'DC'
+                usersRef
+                        .update("status", status)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Toast.makeText(MainActivity.this,"Logged off",Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+
+                                Toast.makeText(MainActivity.this,"Failed",Toast.LENGTH_SHORT).show();
+
+                            }
+                        });
+
                 progressDialog.setMessage("Signing out...");
                 progressDialog.show();
 
@@ -296,7 +391,7 @@ public class MainActivity extends AppCompatActivity {
 //******checking on data within the database on whether it already exist then fetch the user details and place them in the required fields************
 
 
-        DocumentReference docRef = firebaseFirestore.collection("User_Med_IDs").document(user_id);
+        DocumentReference docRef = firebaseFirestore.collection("users").document(user_id);
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -305,8 +400,36 @@ public class MainActivity extends AppCompatActivity {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
 
-                        String contact1 = task.getResult().getString("emergency_contact1").trim();
-                        String contact2 = task.getResult().getString("emergency_contact2");
+                        String contact1 = task.getResult().getString("emergency_contact").trim();
+                        //String contact2 = task.getResult().getString("emergency_contact2");
+
+                        //Toast.makeText(MainActivity.this, "Contact 1 is: "+contact1, Toast.LENGTH_SHORT).show();
+
+                        double lat = Double.parseDouble(latitude);
+                        double lang = Double.parseDouble(longitude);
+
+                        //setup geocoder
+
+                        geocoder = new Geocoder(MainActivity.this, Locale.getDefault());
+
+                        try {
+
+                            adresses = geocoder.getFromLocation(lat, lang, 1);
+                            String address = adresses.get(0).getAddressLine(0);
+                            String area = adresses.get(0).getLocality();
+                            String city = adresses.get(0).getAdminArea();
+
+                            String fulladdress = address + "" + area + "" + city;
+
+                            mainAdress = fulladdress;
+
+                           // Toast.makeText(MainActivity.this, "Your Location:"+mainAdress, Toast.LENGTH_SHORT).show();
+
+
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
 
 
 
@@ -318,16 +441,18 @@ public class MainActivity extends AppCompatActivity {
                         ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.SEND_SMS, Manifest.permission.READ_SMS}, PackageManager.PERMISSION_GRANTED);
 
 
-                        String message = "I am currently in pain or danger and need urgent medical assistance! Please help. I am in:"+mainAdress+"/n sent through Uzima Mobile Application";
+                        String message = "Help! Location:"+mainAdress+".\nLatitude:" +latitude+ "\nLongitude:" +longitude;
 
-                        SmsManager mysmsManager = SmsManager.getDefault();
-                        mysmsManager.sendTextMessage(contact1,null,message,null,null);
+                        //Getting intent and PendingIntent instance
+                        Intent intent=new Intent(getApplicationContext(),MainActivity.class);
+                        PendingIntent pi=PendingIntent.getActivity(getApplicationContext(), 0, intent,0);
 
-                        Toast.makeText(MainActivity.this, "success!!", Toast.LENGTH_SHORT).show();
+                        //Get the SmsManager instance and call the sendTextMessage method to send message
+                        SmsManager sms=SmsManager.getDefault();
+                        sms.sendTextMessage(contact1, null, message, pi,null);
 
-
-
-
+                        Toast.makeText(getApplicationContext(), "Message Sent successfully!",
+                                Toast.LENGTH_LONG).show();
 
 //19-10-1996
                     } else {
@@ -368,17 +493,16 @@ public class MainActivity extends AppCompatActivity {
 
         try {
 
-            adresses = geocoder.getFromLocation(lat,lang,1);
+            adresses = geocoder.getFromLocation(lat, lang, 1);
             String address = adresses.get(0).getAddressLine(0);
             String area = adresses.get(0).getLocality();
             String city = adresses.get(0).getAdminArea();
 
-            String fulladdress=  address+""+area+""+city;
+            String fulladdress = address + "" + area + "" + city;
 
             mainAdress = fulladdress;
 
             //Toast.makeText(MainActivity.this, "Your Location:"+mainAdress, Toast.LENGTH_SHORT).show();
-
 
 
         } catch (IOException e) {
@@ -388,4 +512,147 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void checkIfUserExists() {
+
+        // progressDialog.setMessage("Checking details...");
+        //progressDialog.show();
+
+
+        DocumentReference docRef = firebaseFirestore.collection("users").document(user_id);
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    // progressDialog.dismiss();
+                    DocumentSnapshot document = task.getResult();
+                    assert document != null;
+                    if (document.exists()) {
+                        String name2 = task.getResult().getString("name");
+
+                        Toast.makeText(MainActivity.this, "Welcome back " + name2, Toast.LENGTH_LONG).show();
+
+
+//19-10-1996
+                    } else {
+
+                        //progressDialog.dismiss();
+
+                        Toast.makeText(MainActivity.this, "DATA DOES NOT EXISTS,PLEASE CREATE YOUR PROFILE", Toast.LENGTH_LONG).show();
+                        startActivity(new Intent(MainActivity.this, EditProfile.class));
+
+
+                    }
+                } else {
+
+                    String error = task.getException().getMessage();
+                    Toast.makeText(MainActivity.this, "(FIRESTORE RETRIEVE ERROR):" + error, Toast.LENGTH_LONG).show();
+
+
+                }
+
+
+            }
+        });
+
+
+    }
+
+    public void emergencyListener() {
+
+        firebaseFirestore.collection("Emergency_Feeds")
+                .whereEqualTo("priority", 1)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot snapshots,
+                                        @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Toast.makeText(MainActivity.this, "listen:error", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        for (DocumentChange dc : snapshots.getDocumentChanges()) {
+                            switch (dc.getType()) {
+                                case ADDED:
+                                   // Log.d(TAG, "New city: " + dc.getDocument().getData());
+
+                                    circleImage.setImageDrawable(MainActivity.this.getDrawable(R.mipmap.ic_check_orange));
+
+                                    break;
+                                case MODIFIED:
+                                    //Log.d(TAG, "Modified city: " + dc.getDocument().getData());
+                                    break;
+                                case REMOVED:
+                                    //Log.d(TAG, "Removed city: " + dc.getDocument().getData());
+                                    break;
+                            }
+                        }
+
+                    }
+                });
+
+    }
+
+    public void checkForSuspension(){
+
+        DocumentReference docRef = firebaseFirestore.collection("Suspended_Accounts").document(user_id);
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    // progressDialog.dismiss();
+                    DocumentSnapshot document = task.getResult();
+                    assert document != null;
+                    if (document.exists()) {
+                        String name2 = task.getResult().getString("name");
+
+                        myDialog.setContentView(R.layout.popup_suspended);
+                        buttonOkay=(Button) myDialog.findViewById(R.id.okay_btn);
+
+
+
+                        buttonOkay.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                finish();
+                                System.exit(0);
+                            }
+                        });
+
+
+
+                        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                        myDialog.show();
+
+
+
+
+                        //Toast.makeText(MainActivity.this, "Welcome back " + name2, Toast.LENGTH_LONG).show();
+
+
+//19-10-1996
+                    } else {
+
+                        //progressDialog.dismiss();
+
+                        Toast.makeText(MainActivity.this, "DATA DOES NOT EXISTS,PLEASE CREATE YOUR PROFILE", Toast.LENGTH_LONG).show();
+                        //startActivity(new Intent(MainActivity.this, EditProfile.class));
+
+
+                    }
+                } else {
+
+                    String error = task.getException().getMessage();
+                    Toast.makeText(MainActivity.this, "(FIRESTORE RETRIEVE ERROR):" + error, Toast.LENGTH_LONG).show();
+
+
+                }
+
+
+            }
+        });
+
+
+
+    }
 }

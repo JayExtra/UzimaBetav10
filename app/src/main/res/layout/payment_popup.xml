@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="388dp"
+        android:layout_height="510dp"
+        android:layout_marginTop="116dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.478"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.245" >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/imageView10"
+                android:layout_width="63dp"
+                android:layout_height="69dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginStart="159dp"
+                android:layout_marginLeft="159dp"
+                android:layout_marginTop="52dp"
+                android:layout_marginEnd="166dp"
+                android:layout_marginRight="166dp"
+                app:srcCompat="@drawable/ic_success" />
+
+            <TextView
+                android:id="@+id/textView35"
+                android:layout_width="352dp"
+                android:layout_height="59dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="125dp"
+                android:layout_marginEnd="-22dp"
+                android:layout_marginRight="-22dp"
+                android:text="Payment Success"
+                android:textSize="36sp" />
+
+            <TextView
+                android:id="@+id/textView38"
+                android:layout_width="37dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/textView35"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:layout_marginStart="44dp"
+                android:layout_marginLeft="44dp"
+                android:layout_marginTop="70dp"
+                android:text="ID:"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/trans_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/textView35"
+                android:layout_marginStart="24dp"
+                android:layout_marginLeft="24dp"
+                android:layout_marginTop="70dp"
+                android:layout_toEndOf="@+id/textView38"
+                android:layout_toRightOf="@+id/textView38"
+                android:text="Transaction ID"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/textView60"
+                android:layout_width="83dp"
+                android:layout_height="26dp"
+                android:layout_below="@+id/textView38"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:layout_marginStart="42dp"
+                android:layout_marginLeft="42dp"
+                android:layout_marginTop="13dp"
+                android:text="Amount:"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/amount_txt"
+                android:layout_width="107dp"
+                android:layout_height="24dp"
+                android:layout_below="@+id/trans_id"
+                android:layout_marginStart="15dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="15dp"
+                android:layout_toEndOf="@+id/textView60"
+                android:layout_toRightOf="@+id/textView60"
+                android:text="Amount"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/textView62"
+                android:layout_width="88dp"
+                android:layout_height="29dp"
+                android:layout_below="@+id/textView60"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="46dp"
+                android:layout_marginLeft="46dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="143dp"
+                android:text="Status:"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/status_txt"
+                android:layout_width="117dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="20dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginBottom="150dp"
+                android:layout_toEndOf="@+id/textView62"
+                android:layout_toRightOf="@+id/textView62"
+                android:text="status"
+                android:textSize="18sp" />
+
+            <Button
+                android:id="@+id/button_proceed"
+                android:layout_width="343dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="25dp"
+                android:layout_marginLeft="25dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginBottom="33dp"
+                android:background="#07D60C"
+                android:text="Proceed" />
+
+            <ImageView
+                android:id="@+id/cancel_img"
+                android:layout_width="41dp"
+                android:layout_height="42dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginRight="10dp"
+                app:srcCompat="@drawable/ic_cancel" />
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+</androidx.constraintlayout.widget.ConstraintLayout>
