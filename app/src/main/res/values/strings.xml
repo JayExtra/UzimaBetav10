@@ -43,7 +43,6 @@
     </string-array>
 
 
-
     <string-array name="incident">
         <item>Type of Incident</item>
         <item>Road Traffic Accident</item>
@@ -113,5 +112,9 @@
         <item>62</item>
         <item>63</item>
     </string-array>
+
+    <string name="default_notification_channel_id">Uzima_CH_O1</string>
+    <string name="channel_name">Uzima_Main_Channel</string>
+    <string name="channel_description">Uzima communications channel between Admin,Users and EMTs</string>
 
 </resources>

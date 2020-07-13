@@ -337,32 +337,65 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.profile:
                 startActivity(new Intent(MainActivity.this, Profile.class));
+                finish();
+                return true;
+
+            case R.id.item1:
+                startActivity(new Intent(MainActivity.this, Profile.class));
+                finish();
+                return true;
+
+            case R.id.item2:
+                startActivity(new Intent(MainActivity.this, Notifications.class));
+                finish();
                 return true;
 
             case R.id.logout:
 
-                String status = "offline";
-                String device = "mobile";
+                progressDialog.setMessage("Signing out...");
+                progressDialog.show();
 
-                DocumentReference usersRef = firebaseFirestore.collection("users").document(user_id);
+                Map<String , Object> tokenMapRemove = new HashMap<>();
+                tokenMapRemove.put("token_id" ,FieldValue.delete());
+
+                firebaseFirestore.collection("users").document(user_id).update(tokenMapRemove).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+
+                        String status = "offline";
+                        String device = "mobile";
+
+                        DocumentReference usersRef = firebaseFirestore.collection("users").document(user_id);
 
 // Set the "isCapital" field of the city 'DC'
-                usersRef
-                        .update("status", status)
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                Toast.makeText(MainActivity.this,"Logged off",Toast.LENGTH_SHORT).show();
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
+                        usersRef
+                                .update("status", status)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Toast.makeText(MainActivity.this,"Logged off",Toast.LENGTH_SHORT).show();
 
-                                Toast.makeText(MainActivity.this,"Failed",Toast.LENGTH_SHORT).show();
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
 
-                            }
-                        });
+                                        Toast.makeText(MainActivity.this,"Failed",Toast.LENGTH_SHORT).show();
+
+                                    }
+                                });
+
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                        Toast.makeText(MainActivity.this,"Error on token delete" + e.getMessage(),Toast.LENGTH_SHORT).show();
+
+                    }
+                });
+
 
                 progressDialog.setMessage("Signing out...");
                 progressDialog.show();
@@ -370,6 +403,8 @@ public class MainActivity extends AppCompatActivity {
                 mAuth.signOut();
                 finish();
                 startActivity(new Intent(MainActivity.this, LoginActivity.class));
+
+
                 return true;
 
             case R.id.contact_sup:
