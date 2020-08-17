@@ -143,7 +143,7 @@ public class PostEmergency extends AppCompatActivity {
         Date c = Calendar.getInstance().getTime();
         Toast.makeText(this,"The current time is:"+c,Toast.LENGTH_SHORT).show();
 
-        SimpleDateFormat df = new SimpleDateFormat("dd-M-yyyy");
+        SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
         final String formattedDate = df.format(c);
 
         try {
@@ -217,7 +217,7 @@ public class PostEmergency extends AppCompatActivity {
                                                 houseMap.put("name",name2);
                                                 //houseMap.put("area",userArea);
                                                 houseMap.put("county",userCity);
-                                                houseMap.put("post_date" , formattedDate);
+                                                houseMap.put("post_date", new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date()));
 
                                                 final Map<String,Object> notificationMap =new HashMap<>();
                                                 notificationMap.put("title",title);
