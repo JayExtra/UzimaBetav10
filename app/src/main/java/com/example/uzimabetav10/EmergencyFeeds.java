@@ -104,11 +104,11 @@ public class EmergencyFeeds extends AppCompatActivity {
 
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
 
-        Intent retrieveIntent= getIntent();
+       /* Intent retrieveIntent= getIntent();
         final String lat= retrieveIntent.getStringExtra("LATITUDE");
         final String log= retrieveIntent.getStringExtra("LONGITUDE");
 
-        Toast.makeText(this,"Your Location:"+"\n"+"Latitude= "+lat+"\n"+"Longitude= "+log,Toast.LENGTH_SHORT).show();
+        Toast.makeText(this,"Your Location:"+"\n"+"Latitude= "+lat+"\n"+"Longitude= "+log,Toast.LENGTH_SHORT).show();*/
 
 
 
@@ -123,8 +123,6 @@ public class EmergencyFeeds extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent emergencyIntent= new Intent(EmergencyFeeds.this,PostEmergency.class);
-                emergencyIntent.putExtra("LATITUDE",lat);
-                emergencyIntent.putExtra("LONGITUDE",log);
                 startActivity(emergencyIntent);
 
             }

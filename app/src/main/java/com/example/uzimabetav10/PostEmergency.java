@@ -5,19 +5,26 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Message;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.uzimabetav10.LocationService.LocationService;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -60,15 +67,36 @@ public class PostEmergency extends AppCompatActivity {
 
     private ProgressDialog progressDialog;
     public static final int MAX_LENGTH = 100;
-    private Double lat, lng;
+
 
     List<Address> adresses;
     Geocoder geocoder;
+
+    String latitude ,longitude;
+    double lat , lng;
+    private String CONDITION ="new";
+    private String STATUS =null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_emergency);
+
+        if(Build.VERSION.SDK_INT >= 23){
+            if(checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+                //Request Location
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION} , 1 );
+
+
+            }else{
+                //Req location
+                startService();
+
+            }
+        }else{
+            //start the location service
+            startService();
+        }
 
 
         firebaseAuth = FirebaseAuth.getInstance();
@@ -121,21 +149,51 @@ public class PostEmergency extends AppCompatActivity {
         });
     }
 
+    void startService(){
+        LocationBroadcastReceiver receiver = new LocationBroadcastReceiver();
+        IntentFilter filter = new IntentFilter("ACTION_LOC");
+        registerReceiver(receiver , filter);
+
+        Intent intent = new Intent(PostEmergency.this , LocationService.class);
+        startService(intent);
+    }
+
+    public class LocationBroadcastReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getAction().equals("ACTION_LOC")){
+
+                lat = intent.getDoubleExtra("latitude" , 0f);
+                lng = intent.getDoubleExtra("longitude" , 0f);
+
+                longitude=Double.toString(lng);
+                latitude = Double.toString(lat);
+
+                Toast.makeText(PostEmergency.this ,  "Help! Location:.\nLatitude:" +latitude+ "\nLongitude:" +longitude ,Toast.LENGTH_SHORT).show();
+
+
+            }
+
+        }
+    }
+
+
     private void SendTodDatabase() {
 
         final String title = titleText.getText().toString();
         final String details = detailsText.getText().toString();
 
-        Intent retrieveIntent = getIntent();
+      /*  Intent retrieveIntent = getIntent();
         final String lat = retrieveIntent.getStringExtra("LATITUDE");
         final String log = retrieveIntent.getStringExtra("LONGITUDE");
 
         Toast.makeText(this, "Your Location:" + "\n" + "Latitude= " + lat + "\n" + "Longitude= " + log, Toast.LENGTH_SHORT).show();
 
         final Double lat2 = Double.parseDouble(lat);
-        final Double log2 = Double.parseDouble(log);
+        final Double log2 = Double.parseDouble(log);*/
 
-        final GeoPoint geoPoint = new GeoPoint(lat2, log2);
+        final GeoPoint geoPoint = new GeoPoint(lat, lng);
 
 
         geocoder = new Geocoder(this, Locale.getDefault());
@@ -148,7 +206,7 @@ public class PostEmergency extends AppCompatActivity {
 
         try {
 
-            adresses = geocoder.getFromLocation(lat2, log2, 1);
+            adresses = geocoder.getFromLocation(lat, lng, 1);
             String address = adresses.get(0).getAddressLine(0);
 
             String fulladdress = address + "";
@@ -220,9 +278,10 @@ public class PostEmergency extends AppCompatActivity {
                                                 houseMap.put("post_date", new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date()));
 
                                                 final Map<String,Object> notificationMap =new HashMap<>();
-                                                notificationMap.put("title",title);
-                                                notificationMap.put("details",details);
-                                                notificationMap.put("user_id",current_user_id);
+                                                notificationMap.put("condition",CONDITION);
+                                                notificationMap.put("description",details);
+                                                notificationMap.put("from",current_user_id);
+                                                notificationMap.put("status",STATUS);
                                                 notificationMap.put("timestamp", FieldValue.serverTimestamp());
 
 
@@ -238,8 +297,10 @@ public class PostEmergency extends AppCompatActivity {
                                                                 Toast.makeText(PostEmergency.this,"Emergency details sent",Toast.LENGTH_LONG).show();
 
 
+
+
                                                                 //notification
-                                                                firebaseFirestore.collection("Notifications").document().set(notificationMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                firebaseFirestore.collection("Dispatcher_Notification").document().set(notificationMap).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                     @Override
                                                                     public void onSuccess(Void aVoid) {
 
@@ -260,7 +321,7 @@ public class PostEmergency extends AppCompatActivity {
                                                             @Override
                                                             public void onFailure(@NonNull Exception e) {
 
-                                                                Toast.makeText(PostEmergency.this,"Error sending",Toast.LENGTH_LONG).show();
+                                                                Toast.makeText(PostEmergency.this,"Error sending"+e.getMessage(),Toast.LENGTH_LONG).show();
 
 
                                                             }
@@ -273,7 +334,7 @@ public class PostEmergency extends AppCompatActivity {
                                             } else {
 
 
-                                                Toast.makeText(PostEmergency.this, "DATA DOES NOT EXISTS,PLEASE REGISTER", Toast.LENGTH_LONG).show();
+                                                Toast.makeText(PostEmergency.this, "Couldn't fetch some user data", Toast.LENGTH_LONG).show();
 
 
                                             }
@@ -300,7 +361,7 @@ public class PostEmergency extends AppCompatActivity {
                             public void onFailure(@NonNull Exception e) {
 
 
-                                Toast.makeText(PostEmergency.this,"Error uploading",Toast.LENGTH_LONG).show();
+                                Toast.makeText(PostEmergency.this,"Error uploading:"+ e.getMessage(),Toast.LENGTH_LONG).show();
 
 
                             }
@@ -389,7 +450,7 @@ public class PostEmergency extends AppCompatActivity {
                         } else {
 
 
-                            Toast.makeText(PostEmergency.this, "DATA DOES NOT EXISTS,PLEASE REGISTER", Toast.LENGTH_LONG).show();
+                            Toast.makeText(PostEmergency.this, "Couldn't fetch current user data", Toast.LENGTH_LONG).show();
 
 
                         }

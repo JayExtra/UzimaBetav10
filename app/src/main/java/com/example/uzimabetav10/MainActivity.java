@@ -77,14 +77,14 @@ public class MainActivity extends AppCompatActivity {
 
     //private RequestQueue requestQueue;
 
-    private static final int REQUEST_LOCATION = 1;
+    //private static final int REQUEST_LOCATION = 1;
 
     private LocationManager locationManager;
-    String latitude, longitude;
+    //String latitude, longitude;
     String number1, number2, mainAdress;
 
-    List<Address> adresses;
-    Geocoder geocoder;
+    //List<Address> adresses;
+   // Geocoder geocoder;
 
 
     @Override
@@ -158,10 +158,10 @@ public class MainActivity extends AppCompatActivity {
 
         //setup geocoder
 
-        geocoder = new Geocoder(this, Locale.getDefault());
+        //geocoder = new Geocoder(this, Locale.getDefault());
 
 
-        String currentuser = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        //String currentuser = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
 
         //Toast.makeText(this,"user id is:"+currentuser,Toast.LENGTH_SHORT).show();
@@ -169,9 +169,9 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.single_post_toolbar);
         setSupportActionBar(toolbar);
 
-        //Request permission to access user location
+     /*   //Request permission to access user location
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
-        getUserLocation();
+        getUserLocation();*/
 
 
         //initialize the progress dialog
@@ -184,9 +184,8 @@ public class MainActivity extends AppCompatActivity {
 
                 circleImage.setImageDrawable(MainActivity.this.getDrawable(R.mipmap.ic_check_grey));
                 Intent emergencyIntent = new Intent(MainActivity.this, EmergencyFeeds.class);
-                emergencyIntent.putExtra("LATITUDE", latitude);
-                emergencyIntent.putExtra("LONGITUDE", longitude);
                 startActivity(emergencyIntent);
+
             }
         });
 
@@ -202,8 +201,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent ambulance = new Intent(MainActivity.this, AmbulanceRequests.class);
-                ambulance.putExtra("LATITUDE", latitude);
-                ambulance.putExtra("LONGITUDE", longitude);
                 startActivity(ambulance);
             }
         });
@@ -226,14 +223,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onLongClick(View view) {
 
-
-                //getAddress();
-                sendMessage();
-
-
                 //Toast.makeText(MainActivity.this, "Messages have been sent to your listed Emergency contacts and Uzima call center", Toast.LENGTH_SHORT).show();
-
-
                 startActivity(new Intent(MainActivity.this, FlashingActivity.class));
 
                 return false;
@@ -243,7 +233,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void getUserLocation() {
+   /* private void getUserLocation() {
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
@@ -255,9 +245,9 @@ public class MainActivity extends AppCompatActivity {
         } else {
             getLocation();
         }
-    }
+    }*/
 
-    private void getLocation() {
+    /*private void getLocation() {
 
         //Check Permissions again
 
@@ -303,9 +293,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-    }
+    }*/
 
-    private void OnGPS() {
+   /* private void OnGPS() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         builder.setMessage("Enable GPS").setCancelable(false).setPositiveButton("YES", new DialogInterface.OnClickListener() {
@@ -322,7 +312,7 @@ public class MainActivity extends AppCompatActivity {
         });
         final AlertDialog alertDialog = builder.create();
         alertDialog.show();
-    }
+    }*/
 
 
     @Override
@@ -419,7 +409,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    //retrieve emergency contacts
+   /* //retrieve emergency contacts
     public void sendMessage() {
 
 
@@ -511,13 +501,13 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-
+*/
 
     //sends the emergency messages to emergency contacts
 
 
     //get actual address of the user
-    public void getAddress() {
+   /* public void getAddress() {
 
         Double lat = Double.parseDouble(latitude);
         Double lang = Double.parseDouble(longitude);
@@ -545,7 +535,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-    }
+    }*/
 
     public void checkIfUserExists() {
 

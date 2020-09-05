@@ -4,14 +4,20 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.Manifest;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -25,6 +31,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.example.uzimabetav10.LocationService.LocationService;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -61,10 +68,12 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
     private EditText descText ,descriptionText,patientName,latText,longText,phoneNum;
 
     private ImageView backImage;
-    String lat , lng;
+    //String lat , lng;
     Dialog myDialog, myDialog2;
     List<Address> adresses;
     Geocoder geocoder;
+    String latitude ,longitude;
+    double lat , lng;
 
 
 
@@ -72,6 +81,23 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ambulance_requests);
+
+
+        if(Build.VERSION.SDK_INT >= 23){
+            if(checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+                //Request Location
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION} , 1 );
+
+
+            }else{
+                //Req location
+                startService();
+
+            }
+        }else{
+            //start the location service
+            startService();
+        }
 
         //firebase setup
         FirebaseApp.initializeApp(this);
@@ -128,9 +154,9 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
 
         //retrieve user coordinates
 
-        Intent retrieveIntent= getIntent();
+       /* Intent retrieveIntent= getIntent();
         lat= retrieveIntent.getStringExtra("LATITUDE");
-        lng= retrieveIntent.getStringExtra("LONGITUDE");
+        lng= retrieveIntent.getStringExtra("LONGITUDE");*/
 
 
 
@@ -347,6 +373,35 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
 
     }
 
+    void startService(){
+        LocationBroadcastReceiver receiver = new LocationBroadcastReceiver();
+        IntentFilter filter = new IntentFilter("ACTION_LOC");
+        registerReceiver(receiver , filter);
+
+        Intent intent = new Intent(AmbulanceRequests.this , LocationService.class);
+        startService(intent);
+    }
+
+    public class LocationBroadcastReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getAction().equals("ACTION_LOC")){
+
+                lat = intent.getDoubleExtra("latitude" , 0f);
+                lng = intent.getDoubleExtra("longitude" , 0f);
+
+                longitude=Double.toString(lng);
+                latitude = Double.toString(lat);
+
+                Toast.makeText(AmbulanceRequests.this ,  "Help! Location:.\nLatitude:" +latitude+ "\nLongitude:" +longitude ,Toast.LENGTH_SHORT).show();
+
+
+            }
+
+        }
+    }
+
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long l) {
 
@@ -374,11 +429,7 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
         progressDialog.show();
 
 
-
-        final double lat2=Double.parseDouble(lat);
-        final double log2=Double.parseDouble(lng);
-
-        final GeoPoint geopoint = new GeoPoint(lat2,log2);
+        final GeoPoint geopoint = new GeoPoint(lat,lng);
 
         geocoder = new Geocoder(this, Locale.getDefault());
 
@@ -391,7 +442,7 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
 
         try {
 
-            adresses = geocoder.getFromLocation(lat2, log2, 1);
+            adresses = geocoder.getFromLocation(lat, lng, 1);
             String address = adresses.get(0).getAddressLine(0);
 
             String fulladdress = address + "";
