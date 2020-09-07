@@ -10,16 +10,27 @@
         android:id="@+id/single_post_toolbar"
         layout="@layout/toolbar" />
 
-    <ImageView
-        android:id="@+id/slide_img"
-        android:layout_width="443dp"
-        android:layout_height="228dp"
+    <com.smarteist.autoimageslider.SliderView
+        android:id="@+id/imageSlider"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/single_post_toolbar"
-        app:srcCompat="@drawable/st_jhn" />
+        app:sliderAnimationDuration="600"
+        app:sliderAutoCycleDirection="back_and_forth"
+        app:sliderIndicatorAnimationDuration="600"
+        app:sliderIndicatorEnabled="true"
+        app:sliderIndicatorGravity="center_horizontal|bottom"
+        app:sliderIndicatorMargin="15dp"
+        app:sliderIndicatorOrientation="horizontal"
+        app:sliderIndicatorPadding="3dp"
+        app:sliderIndicatorRadius="2dp"
+        app:sliderIndicatorSelectedColor="#5A5A5A"
+        app:sliderIndicatorUnselectedColor="#FFF"
+        app:sliderScrollTimeInSec="1" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+   <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_panic"
         android:layout_width="60dp"
         android:layout_height="62dp"
@@ -40,7 +51,7 @@
         android:layout_height="556dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/slide_img">
+        app:layout_constraintTop_toBottomOf="@+id/imageSlider">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -48,8 +59,8 @@
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/ambulance_card"
-                android:layout_width="182dp"
-                android:layout_height="123dp"
+                android:layout_width="190dp"
+                android:layout_height="130dp"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
@@ -95,8 +106,8 @@
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/wallet_card"
-                android:layout_width="182dp"
-                android:layout_height="123dp"
+                android:layout_width="190dp"
+                android:layout_height="130dp"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
@@ -138,8 +149,8 @@
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/emergency_card"
-                android:layout_width="182dp"
-                android:layout_height="123dp"
+                android:layout_width="190dp"
+                android:layout_height="130dp"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
@@ -195,15 +206,15 @@
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/deployments_card"
-                android:layout_width="182dp"
-                android:layout_height="123dp"
+                android:layout_width="190dp"
+                android:layout_height="130dp"
                 android:layout_below="@+id/ambulance_card"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_marginTop="30dp"
                 android:layout_marginEnd="18dp"
                 android:layout_marginRight="18dp"
-                app:cardBackgroundColor="#43A047" >
+                app:cardBackgroundColor="#43A047">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -261,10 +272,11 @@
                         android:layout_marginStart="13dp"
                         android:layout_marginLeft="13dp"
                         android:layout_marginTop="18dp"
-                        android:text="Cover status:" />
+                        android:text="Latest Booking:"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
 
                     <TextView
-                        android:id="@+id/textView45"
+                        android:id="@+id/date_text"
                         android:layout_width="77dp"
                         android:layout_height="wrap_content"
                         android:layout_alignParentTop="true"
@@ -273,10 +285,10 @@
                         android:layout_marginTop="19dp"
                         android:layout_toEndOf="@+id/textView39"
                         android:layout_toRightOf="@+id/textView39"
-                        android:text="unpaid" />
+                        android:text="date" />
 
                     <TextView
-                        android:id="@+id/textView46"
+                        android:id="@+id/details_text"
                         android:layout_width="196dp"
                         android:layout_height="31dp"
                         android:layout_below="@+id/textView39"
@@ -287,26 +299,12 @@
                         android:layout_marginLeft="13dp"
                         android:layout_marginTop="25dp"
                         android:layout_marginBottom="43dp"
-                        android:text="Cover remaining period:" />
+                        android:text="Cover remaining period"
+                        android:textAppearance="@android:style/TextAppearance.Material.Body1" />
 
-                    <TextView
-                        android:id="@+id/textView57"
-                        android:layout_width="98dp"
-                        android:layout_height="37dp"
-                        android:layout_alignParentEnd="true"
-                        android:layout_alignParentRight="true"
-                        android:layout_alignParentBottom="true"
-                        android:layout_marginStart="25dp"
-                        android:layout_marginLeft="25dp"
-                        android:layout_marginEnd="52dp"
-                        android:layout_marginRight="52dp"
-                        android:layout_marginBottom="36dp"
-                        android:layout_toEndOf="@+id/textView46"
-                        android:layout_toRightOf="@+id/textView46"
-                        android:text="0 months" />
-
-                    <TextView
-                        android:id="@+id/textView58"
+                    <Button
+                        android:id="@+id/view_btn"
+                        style="@style/Widget.MaterialComponents.Button.TextButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
@@ -315,8 +313,9 @@
                         android:layout_marginEnd="27dp"
                         android:layout_marginRight="27dp"
                         android:layout_marginBottom="14dp"
-                        android:text="Renew cover"
-                        android:textColor="#E53935" />
+                        android:text="View"
+                        android:textColor="#E53935"
+                        android:textSize="24sp" />
                 </RelativeLayout>
             </androidx.cardview.widget.CardView>
         </RelativeLayout>

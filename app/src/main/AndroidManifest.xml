@@ -36,10 +36,6 @@
         <activity android:name=".AmbulanceRequests" />
         <activity android:name=".SingleEmergencyPost" />
         <activity android:name=".FlashingActivity" />
-        <activity android:name=".EditMedId" />
-        <activity
-            android:name=".MedicalID"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity android:name=".PostEmergency" />
         <activity android:name=".EmergencyFeeds" />
         <activity

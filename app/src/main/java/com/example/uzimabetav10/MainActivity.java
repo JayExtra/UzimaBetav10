@@ -27,6 +27,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.telephony.SmsManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -36,6 +37,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.uzimabetav10.Models.SliderItem;
+import com.example.uzimabetav10.SliderAdapter.SlideAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -53,6 +56,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.smarteist.autoimageslider.IndicatorView.animation.type.IndicatorAnimationType;
+import com.smarteist.autoimageslider.IndicatorView.draw.controller.DrawController;
+import com.smarteist.autoimageslider.SliderAnimations;
+import com.smarteist.autoimageslider.SliderView;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -85,6 +92,9 @@ public class MainActivity extends AppCompatActivity {
 
     //List<Address> adresses;
    // Geocoder geocoder;
+
+    SliderView sliderView;
+    private SlideAdapter adapter;
 
 
     @Override
@@ -151,9 +161,39 @@ public class MainActivity extends AppCompatActivity {
         deploymentCard = findViewById(R.id.deployments_card);
         //medIdCard = findViewById(R.id.med_id_card);
         ambulanceCard = findViewById(R.id.ambulance_card);
-        slideshow = findViewById(R.id.slide_img);
         panicActionButton = findViewById(R.id.fab_panic);
         circleImage = findViewById(R.id.check_news);
+
+
+
+       //image slider
+
+        sliderView = findViewById(R.id.imageSlider);
+
+
+        adapter = new SlideAdapter(this);
+        adapter.addItem(new SliderItem("We value our work" ,"https://mindlercareerlibrarynew.imgix.net/8D-Disaster_Management.png"));
+        adapter.addItem(new SliderItem("We go even further" ,"https://image.freepik.com/free-vector/emergency-ambulance-doctors-wearing-mask_23-2148527479.jpg"));
+        adapter.addItem(new SliderItem("The ride of your life" ,"https://image.freepik.com/free-vector/emergency-ambulance-coronavirus_23-2148549602.jpg"));
+
+
+        sliderView.setSliderAdapter(adapter);
+        sliderView.setIndicatorAnimation(IndicatorAnimationType.WORM); //set indicator animation by using SliderLayout.IndicatorAnimations. :WORM or THIN_WORM or COLOR or DROP or FILL or NONE or SCALE or SCALE_DOWN or SLIDE and SWAP!!
+        sliderView.setSliderTransformAnimation(SliderAnimations.SIMPLETRANSFORMATION);
+        sliderView.setAutoCycleDirection(SliderView.AUTO_CYCLE_DIRECTION_BACK_AND_FORTH);
+        sliderView.setIndicatorSelectedColor(Color.WHITE);
+        sliderView.setIndicatorUnselectedColor(Color.GRAY);
+        sliderView.setScrollTimeInSec(3);
+        sliderView.setAutoCycle(true);
+        sliderView.startAutoCycle();
+
+
+        sliderView.setOnIndicatorClickListener(new DrawController.ClickListener() {
+            @Override
+            public void onIndicatorClicked(int position) {
+                Log.i("GGG", "onIndicatorClicked: " + sliderView.getCurrentPagePosition());
+            }
+        });
 
 
         //setup geocoder
