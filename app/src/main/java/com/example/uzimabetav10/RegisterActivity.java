@@ -48,6 +48,7 @@ public class RegisterActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent launchLogin= new Intent(RegisterActivity.this,LoginActivity.class);
                 startActivity(launchLogin);
+                finish();
             }
         });
 
@@ -84,6 +85,7 @@ public class RegisterActivity extends AppCompatActivity {
                     finish();
                     startActivity(new Intent(getApplicationContext(),LoginActivity.class));
                     Toast.makeText(RegisterActivity.this,"Registration Successful",Toast.LENGTH_SHORT).show();
+                    finish();
 
                 }else{
 

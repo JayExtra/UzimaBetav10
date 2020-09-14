@@ -36,6 +36,7 @@ public class AmbulanceCover extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(AmbulanceCover.this, MainActivity.class));
+                finish();
             }
         });
 

@@ -93,6 +93,7 @@ public class SingleEmergencyPost extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(SingleEmergencyPost.this, EmergencyFeeds.class));
+                finish();
             }
         });
 

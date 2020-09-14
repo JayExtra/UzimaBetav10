@@ -113,6 +113,7 @@ public class EditProfile extends AppCompatActivity  implements DatePickerDialog.
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(EditProfile.this, Profile.class));
+                finish();
             }
         });
 

@@ -73,6 +73,7 @@ public class Deployments extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(Deployments.this, MainActivity.class));
+                finish();
             }
         });
 

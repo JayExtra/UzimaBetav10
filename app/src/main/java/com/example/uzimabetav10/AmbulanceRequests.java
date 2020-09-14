@@ -122,6 +122,7 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(AmbulanceRequests.this, MainActivity.class));
+                finish();
             }
         });
 

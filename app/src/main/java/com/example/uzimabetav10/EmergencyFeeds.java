@@ -116,6 +116,7 @@ public class EmergencyFeeds extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(EmergencyFeeds.this, MainActivity.class));
+                finish();
             }
         });
 

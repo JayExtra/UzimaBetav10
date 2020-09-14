@@ -102,6 +102,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        checkLocationPermission();
+
         //initialize Firebase app and get Firebase instance
         FirebaseApp.initializeApp(this);
         mAuth = FirebaseAuth.getInstance();
@@ -130,7 +132,8 @@ public class MainActivity extends AppCompatActivity {
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                           Toast.makeText(MainActivity.this,"Logged in",Toast.LENGTH_SHORT).show();
+                           //Toast.makeText(MainActivity.this,"Logged in",Toast.LENGTH_SHORT).show();
+                            Log.d("Sucess @ sign in check " , "success!!");
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -143,6 +146,7 @@ public class MainActivity extends AppCompatActivity {
                     });
         } else {
             // No user is signed in
+            Log.d("Fail @ sign in check " , "Fail!!");
         }
 
         //check if user is suspended
@@ -273,6 +277,25 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void checkLocationPermission() {
+
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                //Request Location
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+
+
+            } else {
+                //Req location
+                Toast.makeText(MainActivity.this,"Location permission is okay" ,Toast.LENGTH_SHORT).show();
+
+            }
+        } else {
+            //start the location service
+           Toast.makeText(MainActivity.this,"Requires sdk 23 or higher" ,Toast.LENGTH_SHORT).show();
+        }
+    }
+
    /* private void getUserLocation() {
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -382,58 +405,7 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.logout:
 
-                progressDialog.setMessage("Signing out...");
-                progressDialog.show();
-
-                Map<String , Object> tokenMapRemove = new HashMap<>();
-                tokenMapRemove.put("token_id" ,FieldValue.delete());
-
-                firebaseFirestore.collection("users").document(user_id).update(tokenMapRemove).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-
-                        String status = "offline";
-                        String device = "mobile";
-
-                        DocumentReference usersRef = firebaseFirestore.collection("users").document(user_id);
-
-// Set the "isCapital" field of the city 'DC'
-                        usersRef
-                                .update("status", status)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Toast.makeText(MainActivity.this,"Logged off",Toast.LENGTH_SHORT).show();
-
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-
-                                        Toast.makeText(MainActivity.this,"Failed",Toast.LENGTH_SHORT).show();
-
-                                    }
-                                });
-
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-
-                        Toast.makeText(MainActivity.this,"Error on token delete" + e.getMessage(),Toast.LENGTH_SHORT).show();
-
-                    }
-                });
-
-
-                progressDialog.setMessage("Signing out...");
-                progressDialog.show();
-
-                mAuth.signOut();
-                finish();
-                startActivity(new Intent(MainActivity.this, LoginActivity.class));
-
+                signOut();
 
                 return true;
 
@@ -445,6 +417,63 @@ public class MainActivity extends AppCompatActivity {
 
                 return super.onOptionsItemSelected(item);
         }
+
+    }
+
+    private void signOut() {
+
+        progressDialog.setMessage("Signing out...");
+        progressDialog.show();
+
+        Map<String , Object> tokenMapRemove = new HashMap<>();
+        tokenMapRemove.put("token_id" ,FieldValue.delete());
+
+        firebaseFirestore.collection("users").document(user_id).update(tokenMapRemove).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+
+                String status = "offline";
+                String device = "mobile";
+
+                DocumentReference usersRef = firebaseFirestore.collection("users").document(user_id);
+
+// Set the "isCapital" field of the city 'DC'
+                usersRef
+                        .update("status", status)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Toast.makeText(MainActivity.this,"Logged off",Toast.LENGTH_SHORT).show();
+
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+
+                                Toast.makeText(MainActivity.this,"Failed",Toast.LENGTH_SHORT).show();
+
+                            }
+                        });
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+                Toast.makeText(MainActivity.this,"Error on token delete" + e.getMessage(),Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+
+        progressDialog.setMessage("Signing out...");
+        progressDialog.show();
+
+        mAuth.signOut();
+        finish();
+        startActivity(new Intent(MainActivity.this, LoginActivity.class));
+
 
     }
 
@@ -679,6 +708,8 @@ public class MainActivity extends AppCompatActivity {
                         buttonOkay.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
+
+                                signOut();
                                 finish();
                                 System.exit(0);
                             }
@@ -700,8 +731,9 @@ public class MainActivity extends AppCompatActivity {
 
                         //progressDialog.dismiss();
 
-                        Toast.makeText(MainActivity.this, "DATA DOES NOT EXISTS,PLEASE CREATE YOUR PROFILE", Toast.LENGTH_LONG).show();
+                        //Toast.makeText(MainActivity.this, "DATA DOES NOT EXISTS,PLEASE CREATE YOUR PROFILE", Toast.LENGTH_LONG).show();
                         //startActivity(new Intent(MainActivity.this, EditProfile.class));
+                        Log.d("ACCOUNT CHECK:" , "ACCOUNT IS OKAY");
 
 
                     }

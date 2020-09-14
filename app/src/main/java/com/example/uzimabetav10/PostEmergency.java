@@ -18,6 +18,7 @@ import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Message;
 import android.view.View;
 import android.widget.Button;
@@ -82,23 +83,7 @@ public class PostEmergency extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_emergency);
 
-        if(Build.VERSION.SDK_INT >= 23){
-            if(checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
-                //Request Location
-                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION} , 1 );
-
-
-            }else{
-                //Req location
-                startService();
-
-            }
-        }else{
-            //start the location service
-            startService();
-        }
-
-
+        startService();
         firebaseAuth = FirebaseAuth.getInstance();
         FirebaseApp.initializeApp(PostEmergency.this);
         storageReference = FirebaseStorage.getInstance().getReference();
@@ -127,6 +112,7 @@ public class PostEmergency extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(PostEmergency.this, EmergencyFeeds.class));
+                finish();
             }
         });
 
@@ -141,8 +127,13 @@ public class PostEmergency extends AppCompatActivity {
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SendTodDatabase();
 
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        SendTodDatabase();
+                    }
+                }, 5000);
                 //Toast.makeText(PostEmergency.this,"Your Location Latitude and Longitude= "+geoPoint,Toast.LENGTH_SHORT).show();
 
             }
@@ -170,7 +161,7 @@ public class PostEmergency extends AppCompatActivity {
                 longitude=Double.toString(lng);
                 latitude = Double.toString(lat);
 
-                Toast.makeText(PostEmergency.this ,  "Help! Location:.\nLatitude:" +latitude+ "\nLongitude:" +longitude ,Toast.LENGTH_SHORT).show();
+                Toast.makeText(PostEmergency.this ,  "Location:.\nLatitude:" +latitude+ "\nLongitude:" +longitude ,Toast.LENGTH_SHORT).show();
 
 
             }
