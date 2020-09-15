@@ -1,17 +1,14 @@
-package com.example.uzimabetav10;
+package com.example.uzimabetav10.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.example.uzimabetav10.R;
 
 public class AmbulanceCover extends AppCompatActivity {
     private Button proceedBtn;

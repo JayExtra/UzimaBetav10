@@ -19,7 +19,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Splash"
+        <activity android:name=".ui.Splash"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,31 +27,31 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Notifications">
+        <activity android:name=".ui.Notifications">
             <intent-filter>
                 <action android:name="in.com.example.uzimaBetav10.TARGETNOTIFICATION" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".Deployments" />
-        <activity android:name=".Wallet" />
-        <activity android:name=".CoverPayment" />
-        <activity android:name=".AmbulanceCover" />
-        <activity android:name=".AmbulanceRequests" />
-        <activity android:name=".SingleEmergencyPost" />
-        <activity android:name=".FlashingActivity" />
-        <activity android:name=".PostEmergency" />
-        <activity android:name=".EmergencyFeeds" />
+        <activity android:name=".ui.Deployments" />
+        <activity android:name=".ui.Wallet" />
+        <activity android:name=".ui.CoverPayment" />
+        <activity android:name=".ui.AmbulanceCover" />
+        <activity android:name=".ui.AmbulanceRequests" />
+        <activity android:name=".ui.SingleEmergencyPost" />
+        <activity android:name=".ui.FlashingActivity" />
+        <activity android:name=".ui.PostEmergency" />
+        <activity android:name=".ui.EmergencyFeeds" />
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" /> <!-- optional (needed if default theme has no action bar) -->
-        <activity android:name=".EditProfile" />
-        <activity android:name=".Profile" />
-        <activity android:name=".RegisterActivity" />
-        <activity android:name=".LoginActivity"></activity>
+        <activity android:name=".ui.EditProfile" />
+        <activity android:name=".ui.Profile" />
+        <activity android:name=".ui.RegisterActivity" />
+        <activity android:name=".ui.LoginActivity"></activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.MainActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
         <service

@@ -1,17 +1,23 @@
-package com.example.uzimabetav10;
+package com.example.uzimabetav10.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.uzimabetav10.Messaging.NotificationsConstructor;
 import com.example.uzimabetav10.Messaging.NotificationsRecyclerAdapter;
+import com.example.uzimabetav10.R;
+import com.example.uzimabetav10.ViewModels.NotificationsViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
@@ -38,6 +44,9 @@ public class Notifications extends AppCompatActivity {
     private List<NotificationsConstructor> notificationsList;
     private RecyclerView notificationsRecyclerView;
     private NotificationsRecyclerAdapter notificationsRecyclerAdapter;
+
+    private NotificationsViewModel mNotificationsViewModel;
+    private ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,29 +82,58 @@ public class Notifications extends AppCompatActivity {
             }
         });
 
+
+
         //setup app widgets
 
 
         mFloatClear = findViewById(R.id.float_clear_all);
-
+        mProgressBar = findViewById(R.id.load_items_progress);
 
 
         //setup the list
         notificationsRecyclerView = findViewById(R.id.notifications_recycler_view);
 
-        notificationsRecyclerView.setHasFixedSize(true);
 
-
-        //setup the adapter
-        notificationsList = new ArrayList<>();
-        notificationsRecyclerAdapter = new NotificationsRecyclerAdapter(notificationsList);
+        notificationsRecyclerAdapter = new NotificationsRecyclerAdapter();
         notificationsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        notificationsRecyclerView.setHasFixedSize(true);
         notificationsRecyclerView.setAdapter(notificationsRecyclerAdapter);
 
 
+       /* notificationsRecyclerView.setHasFixedSize(true);
 
 
-        //fetch documents from firestore and set into the recycler adapter
+        //setup the adapter*/
+        //notificationsList = new ArrayList<>();
+        //notificationsRecyclerAdapter = new NotificationsRecyclerAdapter(notificationsList);
+       // notificationsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        //notificationsRecyclerView.setAdapter(notificationsRecyclerAdapter);
+
+
+
+        mNotificationsViewModel = new ViewModelProvider(this).get(NotificationsViewModel.class);
+        mNotificationsViewModel.getNotListModelData().observe(this, new Observer<List<NotificationsConstructor>>() {
+            @Override
+            public void onChanged(List<NotificationsConstructor> notificationsConstructors) {
+
+                mProgressBar.setVisibility(View.INVISIBLE);
+                notificationsRecyclerView.setVisibility(View.VISIBLE);
+
+
+                notificationsRecyclerAdapter.setNotificationsList(notificationsConstructors);
+                notificationsRecyclerAdapter.notifyDataSetChanged();
+
+            }
+        });
+
+
+
+
+
+
+
+       /* //fetch documents from firestore and set into the recycler adapter
 
         firebaseFirestore.collection("users").document(user_id).collection("Notifications")
                 .addSnapshotListener(Notifications.this,new EventListener<QuerySnapshot>() {
@@ -126,8 +164,10 @@ public class Notifications extends AppCompatActivity {
                         }
 
                     }
-                });
+                });*/
 
 
     }
+
+
 }

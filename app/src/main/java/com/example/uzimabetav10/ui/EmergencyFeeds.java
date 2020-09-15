@@ -1,4 +1,4 @@
-package com.example.uzimabetav10;
+package com.example.uzimabetav10.ui;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,6 +20,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.uzimabetav10.R;
 import com.example.uzimabetav10.utils.EmergencyPosts;
 import com.example.uzimabetav10.utils.EmergencyRecyclerAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;

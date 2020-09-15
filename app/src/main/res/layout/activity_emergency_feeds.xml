@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".EmergencyFeeds">
+    tools:context=".ui.EmergencyFeeds">
     <include
         android:id="@+id/single_post_toolbar"
         layout="@layout/toolbar" />

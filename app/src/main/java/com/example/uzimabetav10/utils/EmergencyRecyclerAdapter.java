@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.uzimabetav10.R;
-import com.example.uzimabetav10.SingleEmergencyPost;
+import com.example.uzimabetav10.ui.SingleEmergencyPost;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;

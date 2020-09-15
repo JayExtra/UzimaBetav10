@@ -1,10 +1,7 @@
 package com.example.uzimabetav10.utils;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.Address;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,13 +10,9 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.uzimabetav10.EmergencyFeeds;
 import com.example.uzimabetav10.R;
-import com.example.uzimabetav10.SingleEmergencyPost;
 
 import java.util.List;
 

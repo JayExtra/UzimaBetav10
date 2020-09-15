@@ -1,13 +1,15 @@
 package com.example.uzimabetav10.Messaging;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,12 +17,17 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.uzimabetav10.Deployments;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import com.example.uzimabetav10.Repositories.FirebaseNotificationRepository;
+import com.example.uzimabetav10.ui.Deployments;
 import com.example.uzimabetav10.R;
+import com.example.uzimabetav10.ui.SingleEmergencyPost;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -36,12 +43,19 @@ public class NotificationsRecyclerAdapter extends RecyclerView.Adapter<Notificat
     public FirebaseAuth firebaseAuth;
     String message , fromID;
 
+    //private OnNotificationItemClicked mOnNotificationItemClicked;
 
-    public NotificationsRecyclerAdapter(List<NotificationsConstructor> notificationsList){
+
+
+    public void setNotificationsList(List<NotificationsConstructor> notificationsList) {
+        this.notificationsList = notificationsList;
+    }
+
+   /* public NotificationsRecyclerAdapter(List<NotificationsConstructor> notificationsList){
 
         this.notificationsList = notificationsList;
 
-    }
+    }*/
 
     @NonNull
     @Override
@@ -53,7 +67,7 @@ public class NotificationsRecyclerAdapter extends RecyclerView.Adapter<Notificat
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final NotificationsRecyclerAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final NotificationsRecyclerAdapter.ViewHolder holder, final int position) {
 
         //instantiate firebase elements
         FirebaseApp.initializeApp(context);
@@ -61,11 +75,15 @@ public class NotificationsRecyclerAdapter extends RecyclerView.Adapter<Notificat
         mFirebaseFirestore = FirebaseFirestore.getInstance();
 
 
-        //fetch details
+        final String current_user = firebaseAuth.getCurrentUser().getUid();
+
+
+       //fetch details
 
         //fetch message
 
         String from_id = notificationsList.get(position).getFrom();
+        final String documentId = notificationsList.get(position).getNotificationId();
         fromID = from_id;
 
         holder.messageText.setText(notificationsList.get(position).getMessage());
@@ -80,9 +98,22 @@ public class NotificationsRecyclerAdapter extends RecyclerView.Adapter<Notificat
 
                 String name = documentSnapshot.getString("first_name");
                 String role = documentSnapshot.getString("employee_role");
+                String image = documentSnapshot.getString("image");
 
                 holder.fromText.setText(name);
                 //holder.roleText.setText(role);
+
+                if (image != null) {
+                    //******replacing the dummy image with real profile picture******
+                    RequestOptions placeholderRequest = new RequestOptions();
+                    placeholderRequest.placeholder(R.drawable.grey_background);
+
+                    Glide.with(context).load(image).into(holder.mImageView);
+                } else {
+
+                    holder.mImageView.setImageResource(R.drawable.alaert_icon);
+
+                }
 
 
             }
@@ -110,12 +141,48 @@ public class NotificationsRecyclerAdapter extends RecyclerView.Adapter<Notificat
         });
 
 
+        holder.readBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                //delete item at position
+
+                DocumentReference notRef = mFirebaseFirestore.collection("users/"+current_user+"/Notifications")
+                        .document(documentId);
+
+                notRef.delete()
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+
+                                notifyItemRemoved(position);
+
+                                Toast.makeText(context , "Marked as read" , Toast.LENGTH_LONG).show();
+
+
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+
+                                Toast.makeText(context , "Could not mark as read:"+e.getMessage() , Toast.LENGTH_SHORT).show();
+
+                            }
+                        });
+
+
+            }
+        });
+
+
+
     }
 
     @Override
     public int getItemCount() {
 
-        if(notificationsList != null) {
+       if(notificationsList != null) {
 
             return notificationsList.size();
 
@@ -124,6 +191,8 @@ public class NotificationsRecyclerAdapter extends RecyclerView.Adapter<Notificat
             return 0;
 
         }
+
+
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -131,6 +200,8 @@ public class NotificationsRecyclerAdapter extends RecyclerView.Adapter<Notificat
         private TextView messageText , fromText , roleText;
         private View mView;
         private CardView mNotsCrd;
+        private ImageView mImageView;
+        private Button readBtn;
 
 
         public ViewHolder(@NonNull View itemView) {
@@ -140,13 +211,12 @@ public class NotificationsRecyclerAdapter extends RecyclerView.Adapter<Notificat
             messageText = mView.findViewById(R.id.message_txt);
             fromText = mView.findViewById(R.id.from_txt);
             mNotsCrd = mView.findViewById(R.id.notification_card);
-
-
-
-
-
-
+            mImageView = mView.findViewById(R.id.profile_image);
+            readBtn = mView.findViewById(R.id.btn_mark_read);
 
         }
+
     }
+
+
 }

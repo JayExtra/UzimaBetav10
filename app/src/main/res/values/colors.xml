@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#b3b5b3</color>
-    <color name="colorPrimaryDark">#34eb37</color>
+    <color name="colorPrimaryDark">#34EB37</color>
     <color name="colorAccent">#F41707</color>
 
-    <color name="colorProgress">#34eb37</color>
+    <color name="colorProgress">#34EB37</color>
 
 
 </resources>
