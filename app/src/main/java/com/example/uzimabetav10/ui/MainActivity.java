@@ -52,6 +52,7 @@ import com.smarteist.autoimageslider.SliderView;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -93,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
         //initialize Firebase app and get Firebase instance
         FirebaseApp.initializeApp(this);
         mAuth = FirebaseAuth.getInstance();
-        user_id = mAuth.getCurrentUser().getUid();
+        user_id = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
         firebaseFirestore = FirebaseFirestore.getInstance();
 
         myDialog=new Dialog(this);
