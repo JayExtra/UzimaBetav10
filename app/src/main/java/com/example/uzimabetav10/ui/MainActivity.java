@@ -6,6 +6,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.Manifest;
 import android.app.Dialog;
@@ -17,6 +18,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,6 +26,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.uzimabetav10.Models.SliderItem;
@@ -64,10 +67,15 @@ public class MainActivity extends AppCompatActivity {
     private FloatingActionButton panicActionButton;
     private String user_id;
     private FirebaseFirestore firebaseFirestore;
+    private TextView verifyText;
 
-    private Button buttonOkay;
+    private Button buttonOkay , btnVerify;
 
     Dialog myDialog;
+
+    Handler handler = new Handler();
+    Runnable runnable;
+    int delay = 10*1000; //Delay for 10 seconds.  One second = 1000 milliseconds.
 
     //private RequestQueue requestQueue;
 
@@ -120,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onSuccess(Void aVoid) {
                            //Toast.makeText(MainActivity.this,"Logged in",Toast.LENGTH_SHORT).show();
+                            checkVerification();
                             Log.d("Sucess @ sign in check " , "success!!");
                         }
                     })
@@ -137,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         //check if user is suspended
-        checkForSuspension();
+        //checkForSuspension();
 
 
         //check if user has profile
@@ -154,6 +163,8 @@ public class MainActivity extends AppCompatActivity {
         ambulanceCard = findViewById(R.id.ambulance_card);
         panicActionButton = findViewById(R.id.fab_panic);
         circleImage = findViewById(R.id.check_news);
+        verifyText = findViewById(R.id.vrfy_txt);
+        btnVerify = findViewById(R.id.vrfy_btn);
 
 
 
@@ -262,6 +273,80 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+
+
+
+
+    }
+
+
+    @Override
+    protected void onResume() {
+        //start handler as activity become visible
+
+        handler.postDelayed( runnable = new Runnable() {
+            public void run() {
+                //do something
+                checkVerification();
+                checkForSuspension();
+                handler.postDelayed(runnable, delay);
+            }
+        }, delay);
+
+        super.onResume();
+    }
+
+// If onPause() is not included the threads will double up when you
+// reload the activity
+
+    @Override
+    protected void onPause() {
+        handler.removeCallbacks(runnable); //stop handler when activity not visible
+        super.onPause();
+    }
+
+
+
+    private void checkVerification() {
+        final FirebaseUser user = mAuth.getCurrentUser();
+
+        if(!user.isEmailVerified()){
+
+            verifyText.setVisibility(View.VISIBLE);
+            btnVerify.setVisibility(View.VISIBLE);
+
+            btnVerify.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    user.sendEmailVerification().addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+
+                            Toast.makeText(MainActivity.this,"Verification link Has been sent to your email",Toast.LENGTH_LONG).show();
+
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+
+                            Toast.makeText(MainActivity.this,"Could not send verification Email:"+e.getMessage(),Toast.LENGTH_LONG).show();
+
+                        }
+                    });
+
+                }
+            });
+
+
+        }else {
+
+            Log.d("tag", "checkVerification:account is verified ");
+
+
+
+        }
     }
 
     private void checkLocationPermission() {
@@ -430,6 +515,11 @@ public class MainActivity extends AppCompatActivity {
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
+
+                                mAuth.signOut();
+                                progressDialog.dismiss();
+                                finish();
+                                startActivity(new Intent(MainActivity.this, LoginActivity.class));
                                 Toast.makeText(MainActivity.this,"Logged off",Toast.LENGTH_SHORT).show();
 
                             }
@@ -452,14 +542,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
-
-        progressDialog.setMessage("Signing out...");
-        progressDialog.show();
-
-        mAuth.signOut();
-        finish();
-        startActivity(new Intent(MainActivity.this, LoginActivity.class));
 
 
     }
@@ -721,6 +803,7 @@ public class MainActivity extends AppCompatActivity {
                         //Toast.makeText(MainActivity.this, "DATA DOES NOT EXISTS,PLEASE CREATE YOUR PROFILE", Toast.LENGTH_LONG).show();
                         //startActivity(new Intent(MainActivity.this, EditProfile.class));
                         Log.d("ACCOUNT CHECK:" , "ACCOUNT IS OKAY");
+                        myDialog.dismiss();
 
 
                     }

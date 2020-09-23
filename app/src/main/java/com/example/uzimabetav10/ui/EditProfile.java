@@ -16,6 +16,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -38,6 +39,7 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -195,59 +197,82 @@ public class EditProfile extends AppCompatActivity  implements DatePickerDialog.
 
 
 
-        if(!TextUtils.isEmpty(name)&&!TextUtils.isEmpty(email)&&!TextUtils.isEmpty(phone)&&mainImageURI!=null){
+        if(!TextUtils.isEmpty(name)&&!TextUtils.isEmpty(email)&&!TextUtils.isEmpty(phone)&&mainImageURI!=null
+                && !TextUtils.isEmpty(dOb) && !TextUtils.isEmpty(age) && !TextUtils.isEmpty(em_contact)&&!TextUtils.isEmpty(location)){
 
-            progressDialog.setMessage("Uploading details...");
-            progressDialog.show();
 
-            if (isChanged) {        ///checks first if the profile image is changed if it is then proceeds
+            if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+
+                emailField.setError("Please input correct email");
+
+            }else{
+
+                progressDialog.setMessage("Uploading details...");
+                progressDialog.show();
+
+                if (isChanged) {        ///checks first if the profile image is changed if it is then proceeds
 
 
 //***sending image to fire base storage together with user details*********
 
-                user_id = mAuth.getCurrentUser().getUid();
+                    user_id = mAuth.getCurrentUser().getUid();
 
 
 
-                StorageReference image_path = storageReference.child("profile_pictures").child(user_id + ".jpg");
+                    StorageReference image_path = storageReference.child("profile_pictures").child(user_id + ".jpg");
 
-                image_path.putFile(mainImageURI).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-
-
-                        if (task.isSuccessful()) {
-
-                            //****call on method that will store the user data on the firestore database****
-
-                            storeFirestore(task,name,email,phone,dOb,age,genderSelected,em_contact,countySelected,location);
+                    image_path.putFile(mainImageURI).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
 
 
-                        } else {
+                            if (task.isSuccessful()) {
 
-                            String error = task.getException().getMessage();
+                                //****call on method that will store the user data on the firestore database****
 
-                            Toast.makeText(EditProfile.this, "(IMAGE ERROR):" + error, Toast.LENGTH_LONG).show();
+                                storeFirestore(task,name,email,phone,dOb,age,genderSelected,em_contact,countySelected,location);
 
-                           finish();
+
+                            } else {
+
+                                String error = task.getException().getMessage();
+
+                                Toast.makeText(EditProfile.this, "(IMAGE ERROR):" + error, Toast.LENGTH_LONG).show();
+
+                                finish();
+
+                            }
+
 
                         }
+                    });
 
 
-                    }
-                });
+                }else {  //if profile image is not changed pass task as null therefore the user selects image again
 
 
-            }else {  //if profile image is not changed pass task as null therefore the user selects image again
+                    storeFirestore(null, name,email,phone,dOb,age,genderSelected,em_contact,countySelected,location);
+                    Toast.makeText(EditProfile.this, "FIRESTORE ERROR 1:", Toast.LENGTH_LONG).show();
+
+                }
 
 
-                storeFirestore(null, name,email,phone,dOb,age,genderSelected,em_contact,countySelected,location);
-                Toast.makeText(EditProfile.this, "FIRESTORE ERROR 1:", Toast.LENGTH_LONG).show();
+
 
             }
 
 
+
+
+
+        }else{
+
+            Toast.makeText(EditProfile.this,"Please fill all the required fields. No field should be left empty ",Toast.LENGTH_LONG).show();
+
+
         }
+
+
 
     }
 
@@ -555,4 +580,14 @@ public class EditProfile extends AppCompatActivity  implements DatePickerDialog.
 
 
     }
+
+
+
+    public void increaseByDate(){
+
+
+
+    }
+
+
 }

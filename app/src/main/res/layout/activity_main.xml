@@ -5,321 +5,354 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.MainActivity">
+        <include
+            android:id="@+id/single_post_toolbar"
+            layout="@layout/toolbar" />
 
-    <include
-        android:id="@+id/single_post_toolbar"
-        layout="@layout/toolbar" />
-
-    <com.smarteist.autoimageslider.SliderView
-        android:id="@+id/imageSlider"
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/single_post_toolbar"
-        app:sliderAnimationDuration="600"
-        app:sliderAutoCycleDirection="back_and_forth"
-        app:sliderIndicatorAnimationDuration="600"
-        app:sliderIndicatorEnabled="true"
-        app:sliderIndicatorGravity="center_horizontal|bottom"
-        app:sliderIndicatorMargin="15dp"
-        app:sliderIndicatorOrientation="horizontal"
-        app:sliderIndicatorPadding="3dp"
-        app:sliderIndicatorRadius="2dp"
-        app:sliderIndicatorSelectedColor="#5A5A5A"
-        app:sliderIndicatorUnselectedColor="#FFF"
-        app:sliderScrollTimeInSec="1" />
-
-   <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_panic"
-        android:layout_width="60dp"
-        android:layout_height="62dp"
-        android:layout_marginBottom="16dp"
-        android:baselineAlignBottom="false"
-        android:clickable="true"
-        android:scaleType="center"
-        android:src="@drawable/ic_error_black_24dp"
-        app:backgroundTint="#FCF70404"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.509"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <ScrollView
-        android:id="@+id/scrollView2"
-        android:layout_width="match_parent"
-        android:layout_height="556dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageSlider">
-
-        <RelativeLayout
+        <com.smarteist.autoimageslider.SliderView
+            android:id="@+id/imageSlider"
             android:layout_width="match_parent"
-            android:layout_height="800dp">
+            android:layout_height="300dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/vrfy_txt"
+            app:sliderAnimationDuration="600"
+            app:sliderAutoCycleDirection="back_and_forth"
+            app:sliderIndicatorAnimationDuration="600"
+            app:sliderIndicatorEnabled="true"
+            app:sliderIndicatorGravity="center_horizontal|bottom"
+            app:sliderIndicatorMargin="15dp"
+            app:sliderIndicatorOrientation="horizontal"
+            app:sliderIndicatorPadding="3dp"
+            app:sliderIndicatorRadius="2dp"
+            app:sliderIndicatorSelectedColor="#5A5A5A"
+            app:sliderIndicatorUnselectedColor="#FFF"
+            app:sliderScrollTimeInSec="1" />
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/ambulance_card"
-                android:layout_width="190dp"
-                android:layout_height="130dp"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_marginStart="212dp"
-                android:layout_marginLeft="212dp"
-                android:layout_marginTop="22dp"
-                android:layout_marginEnd="17dp"
-                android:layout_marginRight="17dp"
-                app:cardBackgroundColor="#039BE5">
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_panic"
+            android:layout_width="60dp"
+            android:layout_height="62dp"
+            android:layout_marginBottom="16dp"
+            android:baselineAlignBottom="false"
+            android:clickable="true"
+            android:scaleType="center"
+            android:src="@drawable/ic_error_black_24dp"
+            app:backgroundTint="#FCF70404"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.509"
+            app:layout_constraintStart_toStartOf="parent" />
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+        <ScrollView
+            android:id="@+id/scrollView2"
+            android:layout_width="match_parent"
+            android:layout_height="556dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageSlider">
 
-                    <ImageView
-                        android:id="@+id/imageView11"
-                        android:layout_width="53dp"
-                        android:layout_height="44dp"
-                        android:layout_alignParentStart="true"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentBottom="true"
-                        android:layout_marginStart="6dp"
-                        android:layout_marginLeft="6dp"
-                        android:layout_marginBottom="71dp"
-                        app:srcCompat="@drawable/ambulance_icon" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="800dp">
 
-                    <TextView
-                        android:id="@+id/textView13"
-                        android:layout_width="146dp"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_alignParentRight="true"
-                        android:layout_alignParentBottom="true"
-                        android:layout_marginEnd="5dp"
-                        android:layout_marginRight="5dp"
-                        android:layout_marginBottom="10dp"
-                        android:text="Ambulance Services" />
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/ambulance_card"
+                    android:layout_width="190dp"
+                    android:layout_height="130dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginStart="212dp"
+                    android:layout_marginLeft="212dp"
+                    android:layout_marginTop="22dp"
+                    android:layout_marginEnd="17dp"
+                    android:layout_marginRight="17dp"
+                    android:background="@drawable/circle_shape_border"
+                    app:cardBackgroundColor="#039BE5">
 
-                </RelativeLayout>
-            </androidx.cardview.widget.CardView>
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/wallet_card"
-                android:layout_width="190dp"
-                android:layout_height="130dp"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
-                android:layout_marginStart="12dp"
-                android:layout_marginLeft="12dp"
-                android:layout_marginTop="176dp"
-                app:cardBackgroundColor="#8E24AA">
+                        <ImageView
+                            android:id="@+id/imageView11"
+                            android:layout_width="53dp"
+                            android:layout_height="44dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentBottom="true"
+                            android:layout_marginStart="6dp"
+                            android:layout_marginLeft="6dp"
+                            android:layout_marginBottom="71dp"
+                            app:srcCompat="@drawable/ambulance_icon" />
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                        <TextView
+                            android:id="@+id/textView13"
+                            android:layout_width="146dp"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_alignParentRight="true"
+                            android:layout_alignParentBottom="true"
+                            android:layout_marginEnd="5dp"
+                            android:layout_marginRight="5dp"
+                            android:layout_marginBottom="10dp"
+                            android:text="Ambulance Services" />
 
-                    <ImageView
-                        android:id="@+id/imageView12"
-                        android:layout_width="44dp"
-                        android:layout_height="45dp"
-                        android:layout_alignParentStart="true"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentBottom="true"
-                        android:layout_marginStart="11dp"
-                        android:layout_marginLeft="11dp"
-                        android:layout_marginBottom="68dp"
-                        app:srcCompat="@drawable/wallet_icon" />
+                    </RelativeLayout>
+                </androidx.cardview.widget.CardView>
 
-                    <TextView
-                        android:id="@+id/textView32"
-                        android:layout_width="88dp"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_alignParentRight="true"
-                        android:layout_alignParentBottom="true"
-                        android:layout_marginEnd="1dp"
-                        android:layout_marginRight="1dp"
-                        android:layout_marginBottom="13dp"
-                        android:text="My Wallet" />
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/wallet_card"
+                    android:layout_width="190dp"
+                    android:layout_height="130dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginLeft="12dp"
+                    android:layout_marginTop="176dp"
+                    android:background="@drawable/circle_shape_border"
+                    app:cardBackgroundColor="#8E24AA">
 
-                </RelativeLayout>
-            </androidx.cardview.widget.CardView>
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/emergency_card"
-                android:layout_width="190dp"
-                android:layout_height="130dp"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
-                android:layout_marginStart="12dp"
-                android:layout_marginLeft="12dp"
-                android:layout_marginTop="22dp"
-                app:cardBackgroundColor="#D81B60">
+                        <ImageView
+                            android:id="@+id/imageView12"
+                            android:layout_width="44dp"
+                            android:layout_height="45dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentBottom="true"
+                            android:layout_marginStart="11dp"
+                            android:layout_marginLeft="11dp"
+                            android:layout_marginBottom="68dp"
+                            app:srcCompat="@drawable/wallet_icon" />
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                        <TextView
+                            android:id="@+id/textView32"
+                            android:layout_width="88dp"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_alignParentRight="true"
+                            android:layout_alignParentBottom="true"
+                            android:layout_marginEnd="1dp"
+                            android:layout_marginRight="1dp"
+                            android:layout_marginBottom="13dp"
+                            android:text="My Wallet" />
 
-                    <TextView
-                        android:id="@+id/textView10"
-                        android:layout_width="115dp"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_alignParentRight="true"
-                        android:layout_alignParentBottom="true"
-                        android:layout_marginEnd="6dp"
-                        android:layout_marginRight="6dp"
-                        android:layout_marginBottom="9dp"
-                        android:text="Emergency news" />
+                    </RelativeLayout>
+                </androidx.cardview.widget.CardView>
 
-                    <ImageView
-                        android:id="@+id/imageView9"
-                        android:layout_width="43dp"
-                        android:layout_height="45dp"
-                        android:layout_alignParentStart="true"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentBottom="true"
-                        android:layout_marginStart="11dp"
-                        android:layout_marginLeft="11dp"
-                        android:layout_marginBottom="68dp"
-                        app:srcCompat="@drawable/news_paper" />
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/emergency_card"
+                    android:layout_width="190dp"
+                    android:layout_height="130dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginLeft="12dp"
+                    android:layout_marginTop="22dp"
+                    android:background="@drawable/circle_shape_border"
+                    app:cardBackgroundColor="#D81B60">
 
-                    <ImageView
-                        android:id="@+id/check_news"
-                        android:layout_width="27dp"
-                        android:layout_height="27dp"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentEnd="true"
-                        android:layout_alignParentRight="true"
-                        android:layout_alignParentBottom="true"
-                        android:layout_marginTop="7dp"
-                        android:layout_marginEnd="10dp"
-                        android:layout_marginRight="10dp"
-                        android:layout_marginBottom="89dp"
-                        app:srcCompat="@mipmap/ic_check_grey" />
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
 
-                </RelativeLayout>
-            </androidx.cardview.widget.CardView>
+                        <TextView
+                            android:id="@+id/textView10"
+                            android:layout_width="115dp"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_alignParentRight="true"
+                            android:layout_alignParentBottom="true"
+                            android:layout_marginEnd="6dp"
+                            android:layout_marginRight="6dp"
+                            android:layout_marginBottom="9dp"
+                            android:text="Emergency news" />
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/deployments_card"
-                android:layout_width="190dp"
-                android:layout_height="130dp"
-                android:layout_below="@+id/ambulance_card"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_marginTop="30dp"
-                android:layout_marginEnd="18dp"
-                android:layout_marginRight="18dp"
-                app:cardBackgroundColor="#43A047">
+                        <ImageView
+                            android:id="@+id/imageView9"
+                            android:layout_width="43dp"
+                            android:layout_height="45dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentBottom="true"
+                            android:layout_marginStart="11dp"
+                            android:layout_marginLeft="11dp"
+                            android:layout_marginBottom="68dp"
+                            app:srcCompat="@drawable/news_paper" />
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                        <ImageView
+                            android:id="@+id/check_news"
+                            android:layout_width="27dp"
+                            android:layout_height="27dp"
+                            android:layout_alignParentTop="true"
+                            android:layout_alignParentEnd="true"
+                            android:layout_alignParentRight="true"
+                            android:layout_alignParentBottom="true"
+                            android:layout_marginTop="7dp"
+                            android:layout_marginEnd="10dp"
+                            android:layout_marginRight="10dp"
+                            android:layout_marginBottom="89dp"
+                            app:srcCompat="@mipmap/ic_check_grey" />
 
-                    <TextView
-                        android:id="@+id/Deployments"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_alignParentRight="true"
-                        android:layout_alignParentBottom="true"
-                        android:layout_marginEnd="19dp"
-                        android:layout_marginRight="19dp"
-                        android:layout_marginBottom="15dp"
-                        android:text="Deployments" />
+                    </RelativeLayout>
+                </androidx.cardview.widget.CardView>
 
-                    <ImageView
-                        android:id="@+id/imageView13"
-                        android:layout_width="42dp"
-                        android:layout_height="45dp"
-                        android:layout_alignParentStart="true"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentBottom="true"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginBottom="68dp"
-                        app:srcCompat="@drawable/siren_icon" />
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/deployments_card"
+                    android:layout_width="190dp"
+                    android:layout_height="130dp"
+                    android:layout_below="@+id/ambulance_card"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginLeft="18dp"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginEnd="18dp"
+                    android:layout_marginRight="18dp"
+                    android:background="@drawable/circle_shape_border"
+                    app:cardBackgroundColor="#43A047">
 
-                </RelativeLayout>
-            </androidx.cardview.widget.CardView>
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_alignTop="@+id/deployments_card">
 
-            <androidx.cardview.widget.CardView
-                android:layout_width="384dp"
-                android:layout_height="136dp"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
-                android:layout_marginStart="15dp"
-                android:layout_marginLeft="15dp"
-                android:layout_marginTop="326dp"
-                app:cardBackgroundColor="#27FFFFFF" >
+                        <TextView
+                            android:id="@+id/Deployments"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_alignParentRight="true"
+                            android:layout_alignParentBottom="true"
+                            android:layout_marginEnd="19dp"
+                            android:layout_marginRight="19dp"
+                            android:layout_marginBottom="15dp"
+                            android:text="Deployments" />
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                        <ImageView
+                            android:id="@+id/imageView13"
+                            android:layout_width="42dp"
+                            android:layout_height="45dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentBottom="true"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginBottom="68dp"
+                            app:srcCompat="@drawable/siren_icon" />
 
-                    <TextView
-                        android:id="@+id/textView39"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentTop="true"
-                        android:layout_marginStart="13dp"
-                        android:layout_marginLeft="13dp"
-                        android:layout_marginTop="18dp"
-                        android:text="Latest Booking:"
-                        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
+                    </RelativeLayout>
+                </androidx.cardview.widget.CardView>
 
-                    <TextView
-                        android:id="@+id/date_text"
-                        android:layout_width="77dp"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_marginStart="18dp"
-                        android:layout_marginLeft="18dp"
-                        android:layout_marginTop="19dp"
-                        android:layout_toEndOf="@+id/textView39"
-                        android:layout_toRightOf="@+id/textView39"
-                        android:text="date" />
+                <androidx.cardview.widget.CardView
+                    android:layout_width="384dp"
+                    android:layout_height="136dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="326dp"
+                    android:background="@drawable/circle_shape_border"
+                    app:cardBackgroundColor="#27FFFFFF">
 
-                    <TextView
-                        android:id="@+id/details_text"
-                        android:layout_width="196dp"
-                        android:layout_height="31dp"
-                        android:layout_below="@+id/textView39"
-                        android:layout_alignParentStart="true"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentBottom="true"
-                        android:layout_marginStart="13dp"
-                        android:layout_marginLeft="13dp"
-                        android:layout_marginTop="25dp"
-                        android:layout_marginBottom="43dp"
-                        android:text="Cover remaining period"
-                        android:textAppearance="@android:style/TextAppearance.Material.Body1" />
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
 
-                    <Button
-                        android:id="@+id/view_btn"
-                        style="@style/Widget.MaterialComponents.Button.TextButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_alignParentRight="true"
-                        android:layout_alignParentBottom="true"
-                        android:layout_marginEnd="27dp"
-                        android:layout_marginRight="27dp"
-                        android:layout_marginBottom="14dp"
-                        android:text="View"
-                        android:textColor="#E53935"
-                        android:textSize="24sp" />
-                </RelativeLayout>
-            </androidx.cardview.widget.CardView>
-        </RelativeLayout>
-    </ScrollView>
+                        <TextView
+                            android:id="@+id/textView39"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentTop="true"
+                            android:layout_marginStart="13dp"
+                            android:layout_marginLeft="13dp"
+                            android:layout_marginTop="18dp"
+                            android:text="Latest Booking:"
+                            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
 
+                        <TextView
+                            android:id="@+id/date_text"
+                            android:layout_width="77dp"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_marginStart="18dp"
+                            android:layout_marginLeft="18dp"
+                            android:layout_marginTop="19dp"
+                            android:layout_toEndOf="@+id/textView39"
+                            android:layout_toRightOf="@+id/textView39"
+                            android:text="date" />
+
+                        <TextView
+                            android:id="@+id/details_text"
+                            android:layout_width="196dp"
+                            android:layout_height="31dp"
+                            android:layout_below="@+id/textView39"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentBottom="true"
+                            android:layout_marginStart="13dp"
+                            android:layout_marginLeft="13dp"
+                            android:layout_marginTop="25dp"
+                            android:layout_marginBottom="43dp"
+                            android:text="Cover remaining period"
+                            android:textAppearance="@android:style/TextAppearance.Material.Body1" />
+
+                        <Button
+                            android:id="@+id/view_btn"
+                            style="@style/Widget.MaterialComponents.Button.TextButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_alignParentRight="true"
+                            android:layout_alignParentBottom="true"
+                            android:layout_marginEnd="27dp"
+                            android:layout_marginRight="27dp"
+                            android:layout_marginBottom="14dp"
+                            android:text="View"
+                            android:textColor="#E53935"
+                            android:textSize="24sp" />
+                    </RelativeLayout>
+                </androidx.cardview.widget.CardView>
+            </RelativeLayout>
+        </ScrollView>
+
+        <TextView
+            android:id="@+id/vrfy_txt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:fontFamily="sans-serif-black"
+            android:text="Your account is not verified!"
+            android:textColor="#43A047"
+            android:textSize="18sp"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/single_post_toolbar" />
+
+        <Button
+            android:id="@+id/vrfy_btn"
+            android:layout_width="110dp"
+            android:layout_height="35dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/circle_shape2"
+            android:text="Verify"
+            android:visibility="gone"
+            app:layout_constraintStart_toEndOf="@+id/vrfy_txt"
+            app:layout_constraintTop_toBottomOf="@+id/single_post_toolbar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
