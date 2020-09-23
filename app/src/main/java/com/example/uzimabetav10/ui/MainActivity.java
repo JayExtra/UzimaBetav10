@@ -11,10 +11,15 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.Manifest;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -29,6 +34,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.uzimabetav10.LocationService.LocationService;
 import com.example.uzimabetav10.Models.SliderItem;
 import com.example.uzimabetav10.R;
 import com.example.uzimabetav10.SliderAdapter.SlideAdapter;
@@ -53,7 +59,12 @@ import com.smarteist.autoimageslider.IndicatorView.draw.controller.DrawControlle
 import com.smarteist.autoimageslider.SliderAnimations;
 import com.smarteist.autoimageslider.SliderView;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -70,6 +81,16 @@ public class MainActivity extends AppCompatActivity {
     private TextView verifyText;
 
     private Button buttonOkay , btnVerify;
+
+    private LocationBroadcastReceiver receiver;
+
+    double lat , lng;
+    String latitude , longitude;
+    List<Address> adresses;
+    Geocoder geocoder;
+    String userArea , userCity;
+
+
 
     Dialog myDialog;
 
@@ -104,6 +125,45 @@ public class MainActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         user_id = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
         firebaseFirestore = FirebaseFirestore.getInstance();
+
+
+
+
+        if(Build.VERSION.SDK_INT >= 23){
+            if(checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+                //Request Location
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION} , 1 );
+
+
+            }else{
+                //Req location
+
+
+                startService();
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        decodeBearings();
+                    }
+                }, 3000);
+
+            }
+        }else{
+            //start the location service
+            startService();
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+
+                    decodeBearings();
+
+                }
+            }, 3000);
+
+
+        }
+
 
         myDialog=new Dialog(this);
 
@@ -290,6 +350,7 @@ public class MainActivity extends AppCompatActivity {
                 //do something
                 checkVerification();
                 checkForSuspension();
+                decodeBearings();
                 handler.postDelayed(runnable, delay);
             }
         }, delay);
@@ -303,7 +364,66 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         handler.removeCallbacks(runnable); //stop handler when activity not visible
+        unregisterReceiver(receiver);
         super.onPause();
+    }
+
+
+    void startService(){
+         receiver = new LocationBroadcastReceiver();
+        IntentFilter filter = new IntentFilter("ACTION_LOC");
+        registerReceiver(receiver , filter);
+
+        Intent intent = new Intent(MainActivity.this , LocationService.class);
+        startService(intent);
+    }
+
+    public class LocationBroadcastReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getAction().equals("ACTION_LOC")){
+
+                lat = intent.getDoubleExtra("latitude" , 0f);
+                lng = intent.getDoubleExtra("longitude" , 0f);
+
+                longitude=Double.toString(lng);
+                latitude = Double.toString(lat);
+
+                Toast.makeText(MainActivity.this ,  " Location:.\nLatitude:" +latitude+ "\nLongitude:" +longitude ,Toast.LENGTH_SHORT).show();
+
+
+            }
+
+        }
+    }
+
+
+    public void decodeBearings(){
+
+        geocoder = new Geocoder(this, Locale.getDefault());
+
+        try {
+
+            adresses = geocoder.getFromLocation(lat, lng, 1);
+            String address = adresses.get(0).getAddressLine(0);
+
+            String fulladdress = address + "";
+            String area = adresses.get(0).getLocality();
+            String city = adresses.get(0).getAdminArea();
+
+            userArea = area;
+            userCity = city;
+
+            Toast.makeText(MainActivity.this ,"Location:" + userArea + userCity , Toast.LENGTH_LONG).show();
+
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
 
@@ -320,11 +440,17 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
 
+
+
                     user.sendEmailVerification().addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
 
                             Toast.makeText(MainActivity.this,"Verification link Has been sent to your email",Toast.LENGTH_LONG).show();
+                            increaseCounty();
+                            createCountMonth();
+
+
 
                         }
                     }).addOnFailureListener(new OnFailureListener() {
@@ -367,88 +493,6 @@ public class MainActivity extends AppCompatActivity {
            Toast.makeText(MainActivity.this,"Requires sdk 23 or higher" ,Toast.LENGTH_SHORT).show();
         }
     }
-
-   /* private void getUserLocation() {
-
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
-        //Check if gps is enabled
-        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-
-            OnGPS();
-
-        } else {
-            getLocation();
-        }
-    }*/
-
-    /*private void getLocation() {
-
-        //Check Permissions again
-
-        if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MainActivity.this,
-
-                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]
-                    {Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
-        } else {
-            Location LocationGps = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            Location LocationNetwork = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-            Location LocationPassive = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
-
-            if (LocationGps != null) {
-                double lat = LocationGps.getLatitude();
-                double longi = LocationGps.getLongitude();
-
-                latitude = String.valueOf(lat);
-                longitude = String.valueOf(longi);
-
-                Toast.makeText(MainActivity.this, "Your Location:" + "\n" + "Latitude= " + latitude + "\n" + "Longitude= " + longitude, Toast.LENGTH_SHORT).show();
-            } else if (LocationNetwork != null) {
-                double lat = LocationNetwork.getLatitude();
-                double longi = LocationNetwork.getLongitude();
-
-                latitude = String.valueOf(lat);
-                longitude = String.valueOf(longi);
-
-                Toast.makeText(MainActivity.this, "Your Location:" + "\n" + "Latitude= " + latitude + "\n" + "Longitude= " + longitude, Toast.LENGTH_SHORT).show();
-            } else if (LocationPassive != null) {
-                double lat = LocationPassive.getLatitude();
-                double longi = LocationPassive.getLongitude();
-
-                latitude = String.valueOf(lat);
-                longitude = String.valueOf(longi);
-
-                Toast.makeText(MainActivity.this, "Your Location:" + "\n" + "Latitude= " + latitude + "\n" + "Longitude= " + longitude, Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(this, "Can't Get Your Location", Toast.LENGTH_SHORT).show();
-            }
-
-            //Thats All Run Your App
-        }
-
-
-    }*/
-
-   /* private void OnGPS() {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-        builder.setMessage("Enable GPS").setCancelable(false).setPositiveButton("YES", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-            }
-        }).setNegativeButton("NO", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-                dialog.cancel();
-            }
-        });
-        final AlertDialog alertDialog = builder.create();
-        alertDialog.show();
-    }*/
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -529,6 +573,9 @@ public class MainActivity extends AppCompatActivity {
                             public void onFailure(@NonNull Exception e) {
 
                                 Toast.makeText(MainActivity.this,"Failed",Toast.LENGTH_SHORT).show();
+                                mAuth.signOut();
+                                progressDialog.dismiss();
+                                finish();
 
                             }
                         });
@@ -539,6 +586,8 @@ public class MainActivity extends AppCompatActivity {
             public void onFailure(@NonNull Exception e) {
 
                 Toast.makeText(MainActivity.this,"Error on token delete" + e.getMessage(),Toast.LENGTH_SHORT).show();
+                mAuth.signOut();
+                progressDialog.dismiss();
 
             }
         });
@@ -546,134 +595,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
-   /* //retrieve emergency contacts
-    public void sendMessage() {
-
-
-//******checking on data within the database on whether it already exist then fetch the user details and place them in the required fields************
-
-
-        DocumentReference docRef = firebaseFirestore.collection("users").document(user_id);
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    progressDialog.dismiss();
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-
-                        String contact1 = task.getResult().getString("emergency_contact").trim();
-                        //String contact2 = task.getResult().getString("emergency_contact2");
-
-                        //Toast.makeText(MainActivity.this, "Contact 1 is: "+contact1, Toast.LENGTH_SHORT).show();
-
-                        double lat = Double.parseDouble(latitude);
-                        double lang = Double.parseDouble(longitude);
-
-                        //setup geocoder
-
-                        geocoder = new Geocoder(MainActivity.this, Locale.getDefault());
-
-                        try {
-
-                            adresses = geocoder.getFromLocation(lat, lang, 1);
-                            String address = adresses.get(0).getAddressLine(0);
-                            String area = adresses.get(0).getLocality();
-                            String city = adresses.get(0).getAdminArea();
-
-                            String fulladdress = address + "" + area + "" + city;
-
-                            mainAdress = fulladdress;
-
-                           // Toast.makeText(MainActivity.this, "Your Location:"+mainAdress, Toast.LENGTH_SHORT).show();
-
-
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
-
-
-
-
-                        //Toast.makeText(MainActivity.this, "Contacts are:"+number1 +number2, Toast.LENGTH_SHORT).show();
-
-                        //request permission to send sms
-
-                        ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.SEND_SMS, Manifest.permission.READ_SMS}, PackageManager.PERMISSION_GRANTED);
-
-
-                        String message = "Help! Location:"+mainAdress+".\nLatitude:" +latitude+ "\nLongitude:" +longitude;
-
-                        //Getting intent and PendingIntent instance
-                        Intent intent=new Intent(getApplicationContext(),MainActivity.class);
-                        PendingIntent pi=PendingIntent.getActivity(getApplicationContext(), 0, intent,0);
-
-                        //Get the SmsManager instance and call the sendTextMessage method to send message
-                        SmsManager sms=SmsManager.getDefault();
-                        sms.sendTextMessage(contact1, null, message, pi,null);
-
-                        Toast.makeText(getApplicationContext(), "Message Sent successfully!",
-                                Toast.LENGTH_LONG).show();
-
-//19-10-1996
-                    } else {
-
-                        Toast.makeText(MainActivity.this, "THE USER DOES NOT HAVE ANY EMERGENCY CONTACTS LISTED", Toast.LENGTH_LONG).show();
-                        startActivity(new Intent(MainActivity.this, FlashingActivity.class));
-
-
-                    }
-                } else {
-
-                    String error = task.getException().getMessage();
-                    Toast.makeText(MainActivity.this, "(FIRESTORE RETRIEVE ERROR):" + error, Toast.LENGTH_LONG).show();
-
-
-                }
-
-
-            }
-        });
-
-
-    }
-*/
-
-    //sends the emergency messages to emergency contacts
-
-
-    //get actual address of the user
-   /* public void getAddress() {
-
-        Double lat = Double.parseDouble(latitude);
-        Double lang = Double.parseDouble(longitude);
-
-        //setup geocoder
-
-        geocoder = new Geocoder(this, Locale.getDefault());
-
-        try {
-
-            adresses = geocoder.getFromLocation(lat, lang, 1);
-            String address = adresses.get(0).getAddressLine(0);
-            String area = adresses.get(0).getLocality();
-            String city = adresses.get(0).getAdminArea();
-
-            String fulladdress = address + "" + area + "" + city;
-
-            mainAdress = fulladdress;
-
-            //Toast.makeText(MainActivity.this, "Your Location:"+mainAdress, Toast.LENGTH_SHORT).show();
-
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
-    }*/
 
     public void checkIfUserExists() {
 
@@ -822,4 +743,58 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
+    public void increaseCounty(){
+
+        Log.d("Tag:", "increaseCounty: " + userCity);
+
+        DocumentReference docRef = firebaseFirestore.collection("County_Users").document(userCity);
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+
+                        DocumentReference countRef = firebaseFirestore.collection("County_Users").document(userCity);
+// Atomically increment the population of the city by 1.
+                        countRef.update("count", FieldValue.increment(1));
+
+                    } else {
+
+
+                        DocumentReference countRef = firebaseFirestore.collection("County_Users").document(userCity);
+
+                        Map<String, Object> userMap = new HashMap<>();
+                        userMap.put("count", FieldValue.increment(1));
+
+// Atomically increment the population of the city by 1.
+                        countRef.set(userMap);
+
+                    }
+                } else {
+
+                    Toast.makeText(MainActivity.this ,"Error: could not update Count in counties"  , Toast.LENGTH_LONG).show();
+
+
+                }
+            }
+        });
+
+
+    }
+
+    public void createCountMonth(){
+        Calendar cal = Calendar.getInstance();
+        // Toast.makeText(RegisterActivity.this ,"Month:" +new SimpleDateFormat("MMMM").format(cal.getTime()) , Toast.LENGTH_LONG).show();
+
+        String month = new SimpleDateFormat("MMMM").format(cal.getTime());
+
+        Log.d("tag", "createCountMonth: " + month);
+
+        DocumentReference countRef = firebaseFirestore.collection("Month_Users").document(month);
+// Atomically increment the population of the city by 1.
+        countRef.update("count", FieldValue.increment(1));
+    }
+
 }

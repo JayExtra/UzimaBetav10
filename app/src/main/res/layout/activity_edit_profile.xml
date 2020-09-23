@@ -155,7 +155,7 @@
                         android:layout_alignParentBottom="true"
                         android:layout_marginStart="81dp"
                         android:layout_marginLeft="81dp"
-                        android:layout_marginBottom="67dp"
+                        android:layout_marginBottom="26dp"
                         android:background="@drawable/circle_shape2"
                         android:text="Update"
                         android:textColorHint="#10C71A" />
@@ -188,7 +188,7 @@
                         android:layout_marginBottom="423dp"
                         android:layout_toEndOf="@+id/date_button"
                         android:layout_toRightOf="@+id/date_button"
-                        android:background="@android:drawable/spinner_dropdown_background"
+                        android:background="@drawable/circle_shape_border"
                         android:ems="10"
                         android:inputType="textPersonName"
                         android:text="date of birth" />
@@ -202,15 +202,15 @@
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
                         android:layout_alignParentBottom="true"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginEnd="75dp"
-                        android:layout_marginRight="75dp"
+                        android:layout_marginStart="21dp"
+                        android:layout_marginLeft="21dp"
+                        android:layout_marginEnd="59dp"
+                        android:layout_marginRight="59dp"
                         android:layout_marginBottom="246dp"
                         android:background="@drawable/circle_shape_border"
                         android:ems="10"
                         android:hint="age"
-                        android:inputType="number"  />
+                        android:inputType="number" />
 
                     <Spinner
                         android:id="@+id/spinner_gender"
@@ -221,11 +221,12 @@
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
                         android:layout_alignParentBottom="true"
-                        android:layout_marginStart="35dp"
-                        android:layout_marginLeft="35dp"
-                        android:layout_marginEnd="40dp"
-                        android:layout_marginRight="40dp"
-                        android:layout_marginBottom="178dp" />
+                        android:layout_marginStart="14dp"
+                        android:layout_marginLeft="14dp"
+                        android:layout_marginEnd="61dp"
+                        android:layout_marginRight="61dp"
+                        android:layout_marginBottom="168dp"
+                        android:background="@drawable/circle_shape_border" />
 
                     <EditText
                         android:id="@+id/emergency_contact"
@@ -236,15 +237,15 @@
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
                         android:layout_alignParentBottom="true"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginEnd="61dp"
-                        android:layout_marginRight="61dp"
-                        android:layout_marginBottom="169dp"
+                        android:layout_marginStart="14dp"
+                        android:layout_marginLeft="14dp"
+                        android:layout_marginEnd="55dp"
+                        android:layout_marginRight="55dp"
+                        android:layout_marginBottom="88dp"
                         android:background="@drawable/circle_shape_border"
                         android:ems="10"
                         android:hint="emergency contact"
-                        android:inputType="number"  />
+                        android:inputType="number" />
 
                     <Spinner
                         android:id="@+id/county_spinner"
@@ -261,7 +262,7 @@
                         android:layout_marginTop="395dp"
                         android:layout_marginEnd="43dp"
                         android:layout_marginRight="43dp"
-                        android:background="@android:drawable/spinner_dropdown_background" />
+                        android:background="@drawable/circle_shape_border" />
 
                     <EditText
                         android:id="@+id/location_txt"

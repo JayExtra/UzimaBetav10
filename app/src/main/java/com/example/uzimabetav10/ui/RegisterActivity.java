@@ -62,7 +62,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     String userArea , userCity;
 
-    LocationBroadcastReceiver receiver;
+    //LocationBroadcastReceiver receiver;
 
 
 
@@ -76,7 +76,7 @@ public class RegisterActivity extends AppCompatActivity {
         mFirebaseFirestore = FirebaseFirestore.getInstance();
 
 
-
+/*
         if(Build.VERSION.SDK_INT >= 23){
             if(checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
                 //Request Location
@@ -93,13 +93,8 @@ public class RegisterActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         decodeBearings();
-
-                        increaseCounty();
-                        createCountMonth();
                     }
                 }, 3000);
-
-
 
             }
         }else{
@@ -111,13 +106,11 @@ public class RegisterActivity extends AppCompatActivity {
 
                     decodeBearings();
 
-                    increaseCounty();
-                    createCountMonth();
                 }
             }, 3000);
 
 
-        }
+        }*/
 
 
 
@@ -186,6 +179,8 @@ public class RegisterActivity extends AppCompatActivity {
                         //user is successfully registered start main domicile activity and log in
 
                         Toast.makeText(RegisterActivity.this,"Registration Successful",Toast.LENGTH_SHORT).show();
+                        //increaseCounty();
+                        //createCountMonth();
 
                         String token_id = FirebaseInstanceId.getInstance().getToken();
                         String current_id = mAuth.getCurrentUser().getUid();
@@ -193,13 +188,15 @@ public class RegisterActivity extends AppCompatActivity {
                         Map<String, Object> tokenMap = new HashMap<>();
                         tokenMap.put("token_id" , token_id);
 
+
+
                         mFirebaseFirestore.collection("users").document(current_id).update(tokenMap)
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
 
-                                        sendVerificationEmail();
 
+                                        sendVerificationEmail();
 
                                         finish();
                                         startActivity(new Intent(getApplicationContext(),LoginActivity.class));
@@ -212,6 +209,9 @@ public class RegisterActivity extends AppCompatActivity {
                             public void onFailure(@NonNull Exception e) {
 
                                 Toast.makeText(RegisterActivity.this, "Error :.." + e.getMessage(),Toast.LENGTH_SHORT).show();
+                                finish();
+                                startActivity(new Intent(getApplicationContext(),LoginActivity.class));
+                                Toast.makeText(RegisterActivity.this,"Registration Successful",Toast.LENGTH_SHORT).show();
 
                             }
                         });
@@ -240,7 +240,7 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        unregisterReceiver(receiver);
+        //unregisterReceiver(receiver);
     }
 
     private void sendVerificationEmail() {
@@ -269,7 +269,7 @@ public class RegisterActivity extends AppCompatActivity {
 
 
 
-    void startService(){
+   /* void startService(){
         receiver = new LocationBroadcastReceiver();
         IntentFilter filter = new IntentFilter("ACTION_LOC");
         registerReceiver(receiver , filter);
@@ -290,7 +290,7 @@ public class RegisterActivity extends AppCompatActivity {
                 longitude=Double.toString(lng);
                 latitude = Double.toString(lat);
 
-                Toast.makeText(RegisterActivity.this ,  "Help! Location:.\nLatitude:" +latitude+ "\nLongitude:" +longitude ,Toast.LENGTH_SHORT).show();
+                Toast.makeText(RegisterActivity.this ,  " Location:.\nLatitude:" +latitude+ "\nLongitude:" +longitude ,Toast.LENGTH_SHORT).show();
 
 
             }
@@ -340,7 +340,6 @@ public class RegisterActivity extends AppCompatActivity {
                     if (document.exists()) {
 
                         DocumentReference countRef = mFirebaseFirestore.collection("County_Users").document(userCity);
-
 // Atomically increment the population of the city by 1.
                         countRef.update("count", FieldValue.increment(1));
 
@@ -359,7 +358,7 @@ public class RegisterActivity extends AppCompatActivity {
                 } else {
 
                     Toast.makeText(RegisterActivity.this ,"Error: could not update Count in counties"  , Toast.LENGTH_LONG).show();
-                    
+
 
                 }
             }
@@ -377,6 +376,6 @@ public class RegisterActivity extends AppCompatActivity {
         DocumentReference countRef = mFirebaseFirestore.collection("Month_Users").document(month);
 // Atomically increment the population of the city by 1.
         countRef.update("count", FieldValue.increment(1));
-    }
+    }*/
 }
 
