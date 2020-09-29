@@ -38,6 +38,7 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 
@@ -203,8 +204,6 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
                 backImage = (ImageView) myDialog2.findViewById(R.id.back_arrow);
                 descText = myDialog2.findViewById(R.id.descrption_words);
                 patientName = myDialog2.findViewById(R.id.patient_text);
-                latText = myDialog2.findViewById(R.id.lat_txt);
-                longText = myDialog2.findViewById(R.id.long_txt);
                 phoneNum = myDialog2.findViewById(R.id.phone_num);
 
 
@@ -265,8 +264,6 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
 
                         final String description = descText.getText().toString();
                         final String patient = patientName.getText().toString();
-                        final String latitude= latText.getText().toString();
-                        final String longitude = longText.getText().toString();
                         final String phone = phoneNum.getText().toString();
 
                         Date c = Calendar.getInstance().getTime();
@@ -283,16 +280,13 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
                         Toast.makeText(myDialog.getContext(),"Patient details are" + patient+description,Toast.LENGTH_SHORT).show();
 
 
-                        final double lat2=Double.parseDouble(latitude);
-                        final double log2=Double.parseDouble(longitude);
-
-                        final GeoPoint geopoint = new GeoPoint(lat2,log2);
+                        final GeoPoint geopoint = new GeoPoint(lat,lng);
 
                         geocoder = new Geocoder(myDialog2.getContext(), Locale.getDefault());
 
                         try {
 
-                            adresses = geocoder.getFromLocation(lat2, log2, 1);
+                            adresses = geocoder.getFromLocation(lat, lng, 1);
                             String address = adresses.get(0).getAddressLine(0);
 
                             String fulladdress = address + "";
@@ -313,7 +307,7 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
 
                         userMap.put("name",patient);
                         userMap.put("phone_number",phone);
-                        userMap.put("email",null);
+                        userMap.put("email","n/a");
                         userMap.put("location",geopoint);
                         userMap.put("incident",incident_type2);
                         userMap.put("description",description);
@@ -331,6 +325,9 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
 
                                         descText.setText("");
                                         progressDialog.dismiss();
+
+                                        sendNotificationElse(user_id, description ,patient);
+
                                         myDialog2.dismiss();
 
                                     }
@@ -465,11 +462,11 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
                     DocumentSnapshot document = task.getResult();
                     assert document != null;
                     if (document.exists()) {
-                        String name2 = task.getResult().getString("name");
+                        final String name2 = task.getResult().getString("name");
                         String phn_num = task.getResult().getString("phone");
                         String email = task.getResult().getString("email");
 
-                        String descriptionTxt = descriptionText.getText().toString();
+                        final String descriptionTxt = descriptionText.getText().toString();
 
 
 
@@ -492,6 +489,9 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
                                     @Override
                                     public void onSuccess(Void aVoid) {
                                         Toast.makeText(AmbulanceRequests.this,"Ambulance request sent",Toast.LENGTH_LONG).show();
+
+
+                                        sendNotification(user_id ,descriptionTxt,name2);
 
                                        descriptionText.setText("");
 
@@ -536,6 +536,68 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
             }
         });
 
+
+
+    }
+
+    private void sendNotification(String user_id, String descriptionTxt , String name2) {
+
+
+        String message2 = "Ambulance Request From "+name2+"\n"+descriptionTxt;
+        Map<String , Object> adminNotification = new HashMap<>();
+        adminNotification.put("from",user_id);
+        adminNotification.put("description", message2);
+        adminNotification.put("status" , "received");
+        adminNotification.put("condition" , "new");
+        adminNotification.put("timestamp" , FieldValue.serverTimestamp());
+
+        firebaseFirestore.collection("Dispatcher_Notification").document().set(adminNotification)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+
+                        Toast.makeText(AmbulanceRequests.this,"Admin Notified",Toast.LENGTH_SHORT).show();
+
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+                Toast.makeText(AmbulanceRequests.this,"Failed to notified admin"+e.getMessage(),Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+
+    }
+
+    private void sendNotificationElse(String user_id, String descriptionTxt , String name2) {
+
+
+        String message2 = "Ambulance Request For "+name2+"\n"+descriptionTxt;
+        Map<String , Object> adminNotification = new HashMap<>();
+        adminNotification.put("from",user_id);
+        adminNotification.put("description", message2);
+        adminNotification.put("status" , "received");
+        adminNotification.put("condition" , "new");
+        adminNotification.put("timestamp" , FieldValue.serverTimestamp());
+
+        firebaseFirestore.collection("Dispatcher_Notification").document().set(adminNotification)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+
+                        Toast.makeText(AmbulanceRequests.this,"Admin Notified",Toast.LENGTH_SHORT).show();
+
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+                Toast.makeText(AmbulanceRequests.this,"Failed to notified admin"+e.getMessage(),Toast.LENGTH_SHORT).show();
+
+            }
+        });
 
 
     }

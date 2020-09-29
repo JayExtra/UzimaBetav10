@@ -10,7 +10,7 @@
         android:id="@+id/single_post_toolbar"
         layout="@layout/toolbar"
         android:layout_width="421dp"
-        android:layout_height="63dp"
+        android:layout_height="55dp"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -18,22 +18,14 @@
         app:layout_constraintTop_toTopOf="parent"
         app:titleMarginBottom="0dp" />
 
-    <ImageView
-        android:id="@+id/imageView5"
-        android:layout_width="418dp"
-        android:layout_height="188dp"
-        android:src="@drawable/grey_background"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/single_post_toolbar" />
-
     <ScrollView
-        android:layout_width="407dp"
-        android:layout_height="549dp"
+        android:id="@+id/scrollView4"
+        android:layout_width="match_parent"
+        android:layout_height="517dp"
         android:fadeScrollbars="false"
         android:scrollbarAlwaysDrawHorizontalTrack="true"
         android:scrollbarAlwaysDrawVerticalTrack="true"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView5">
@@ -67,7 +59,7 @@
                         android:layout_alignParentRight="true"
                         android:layout_marginStart="7dp"
                         android:layout_marginLeft="7dp"
-                        android:layout_marginTop="58dp"
+                        android:layout_marginTop="81dp"
                         android:layout_marginEnd="10dp"
                         android:layout_marginRight="10dp"
                         android:layout_marginBottom="0dp" />
@@ -81,11 +73,11 @@
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
-                        android:layout_marginStart="45dp"
-                        android:layout_marginLeft="45dp"
-                        android:layout_marginTop="27dp"
-                        android:layout_marginEnd="58dp"
-                        android:layout_marginRight="58dp"
+                        android:layout_marginStart="46dp"
+                        android:layout_marginLeft="46dp"
+                        android:layout_marginTop="62dp"
+                        android:layout_marginEnd="57dp"
+                        android:layout_marginRight="57dp"
                         android:layout_marginBottom="0dp"
                         android:background="@color/design_default_color_primary"
                         android:text="Navigate" />
@@ -180,7 +172,7 @@
                         android:layout_alignParentLeft="true"
                         android:layout_marginStart="25dp"
                         android:layout_marginLeft="25dp"
-                        android:layout_marginTop="22dp"
+                        android:layout_marginTop="26dp"
                         android:text="title"
                         android:textSize="24sp" />
 
@@ -203,9 +195,10 @@
                         android:layout_below="@+id/comments_list"
                         android:layout_alignParentStart="true"
                         android:layout_alignParentLeft="true"
-                        android:layout_marginStart="22dp"
-                        android:layout_marginLeft="22dp"
-                        android:layout_marginTop="31dp"
+                        android:layout_marginStart="23dp"
+                        android:layout_marginLeft="23dp"
+                        android:layout_marginTop="30dp"
+                        android:background="@drawable/circle_shape_border"
                         android:ems="10"
                         android:gravity="start|top"
                         android:hint="comment"
@@ -218,11 +211,11 @@
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
                         android:layout_alignParentBottom="true"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginEnd="20dp"
-                        android:layout_marginRight="20dp"
-                        android:layout_marginBottom="85dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginEnd="15dp"
+                        android:layout_marginRight="15dp"
+                        android:layout_marginBottom="94dp"
                         android:layout_toEndOf="@+id/comment_field"
                         android:layout_toRightOf="@+id/comment_field"
                         android:src="@drawable/ic_send" />
@@ -234,13 +227,25 @@
                         android:layout_below="@+id/button_navigate"
                         android:layout_alignParentStart="true"
                         android:layout_alignParentLeft="true"
-                        android:layout_marginStart="19dp"
-                        android:layout_marginLeft="19dp"
-                        android:layout_marginTop="28dp"
+                        android:layout_marginStart="9dp"
+                        android:layout_marginLeft="9dp"
+                        android:layout_marginTop="51dp"
                         android:text="Comments:" />
                 </RelativeLayout>
             </androidx.cardview.widget.CardView>
         </RelativeLayout>
     </ScrollView>
+
+    <ImageView
+        android:id="@+id/imageView5"
+        android:layout_width="match_parent"
+        android:layout_height="188dp"
+        app:layout_constraintBottom_toTopOf="@+id/scrollView4"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/single_post_toolbar"
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@color/colorPrimary" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

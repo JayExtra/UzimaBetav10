@@ -17,6 +17,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -182,288 +183,306 @@ public class PostEmergency extends AppCompatActivity {
         final Double lat2 = Double.parseDouble(lat);
         final Double log2 = Double.parseDouble(log);*/
 
-        final GeoPoint geoPoint = new GeoPoint(lat, lng);
+      if(TextUtils.isEmpty(title)){
 
+          titleText.setError("The title is required");
+      }else if(TextUtils.isEmpty(details)){
 
-        geocoder = new Geocoder(this, Locale.getDefault());
+          detailsText.setError("Please fill in details");
 
-        Date c = Calendar.getInstance().getTime();
-        Toast.makeText(this,"The current time is:"+c,Toast.LENGTH_SHORT).show();
+      }else{
 
-        SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
-        final String formattedDate = df.format(c);
 
-        try {
+          final GeoPoint geoPoint = new GeoPoint(lat, lng);
 
-            adresses = geocoder.getFromLocation(lat, lng, 1);
-            String address = adresses.get(0).getAddressLine(0);
 
-            String fulladdress = address + "";
-            //String area = adresses.get(0).getLocality();
-            String city = adresses.get(0).getAdminArea();
+          geocoder = new Geocoder(this, Locale.getDefault());
 
-           // userArea = area;
-            userCity = city;
+          Date c = Calendar.getInstance().getTime();
+          Toast.makeText(this,"The current time is:"+c,Toast.LENGTH_SHORT).show();
 
+          SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
+          final String formattedDate = df.format(c);
 
+          try {
 
-            Toast.makeText(PostEmergency.this, "Your area:"+userArea, Toast.LENGTH_SHORT).show();
+              adresses = geocoder.getFromLocation(lat, lng, 1);
+              String address = adresses.get(0).getAddressLine(0);
 
+              String fulladdress = address + "";
+              //String area = adresses.get(0).getLocality();
+              String city = adresses.get(0).getAdminArea();
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+              // userArea = area;
+              userCity = city;
 
 
 
-        if(postImageUri1!=null){
+              Toast.makeText(PostEmergency.this, "Your area:"+userArea, Toast.LENGTH_SHORT).show();
 
-            progressDialog.setMessage("Sending emergency...");
-            progressDialog.show();
 
-            final String randomName = UUID.randomUUID().toString();
+          } catch (IOException e) {
+              e.printStackTrace();
+          }
 
 
-            StorageReference filePath= storageReference.child("Emergency_Images").child(randomName+".jpg");
-            filePath.putFile(postImageUri1).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
 
+          if(postImageUri1!=null){
 
-                    if(task.isSuccessful()){
-                        progressDialog.dismiss();
+              progressDialog.setMessage("Sending emergency...");
+              progressDialog.show();
 
-                        storageReference.child("Emergency_Images").child(randomName+".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                            @Override
-                            public void onSuccess(final Uri download_uri) {
+              final String randomName = UUID.randomUUID().toString();
 
-                                //retrieve user's name first
 
-                                DocumentReference docRef = firebaseFirestore.collection("users").document(current_user_id);
-                                docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                    @RequiresApi(api = Build.VERSION_CODES.N)
-                                    @Override
-                                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                        if (task.isSuccessful()) {
+              StorageReference filePath= storageReference.child("Emergency_Images").child(randomName+".jpg");
+              filePath.putFile(postImageUri1).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                  @Override
+                  public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
 
-                                            DocumentSnapshot document = task.getResult();
-                                            if (document.exists()) {
 
-                                                String name2 = task.getResult().getString("name");
+                      if(task.isSuccessful()){
+                          progressDialog.dismiss();
 
-                                                //combine all details and send to database
+                          storageReference.child("Emergency_Images").child(randomName+".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                              @Override
+                              public void onSuccess(final Uri download_uri) {
 
+                                  //retrieve user's name first
 
-                                                Map<String,Object> houseMap =new HashMap<>();
-                                                houseMap.put("house_image_uri",download_uri.toString());
-                                                houseMap.put("title",title);
-                                                houseMap.put("details",details);
-                                                houseMap.put("user_id",current_user_id);
-                                                houseMap.put("timestamp", FieldValue.serverTimestamp());
-                                                houseMap.put("location",geoPoint);
-                                                houseMap.put("name",name2);
-                                                //houseMap.put("area",userArea);
-                                                houseMap.put("county",userCity);
-                                                houseMap.put("post_date", new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date()));
+                                  DocumentReference docRef = firebaseFirestore.collection("users").document(current_user_id);
+                                  docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                      @RequiresApi(api = Build.VERSION_CODES.N)
+                                      @Override
+                                      public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                          if (task.isSuccessful()) {
 
-                                                final Map<String,Object> notificationMap =new HashMap<>();
-                                                notificationMap.put("condition",CONDITION);
-                                                notificationMap.put("description",details);
-                                                notificationMap.put("from",current_user_id);
-                                                notificationMap.put("status",STATUS);
-                                                notificationMap.put("timestamp", FieldValue.serverTimestamp());
+                                              DocumentSnapshot document = task.getResult();
+                                              if (document.exists()) {
 
+                                                  String name2 = task.getResult().getString("name");
 
+                                                  //combine all details and send to database
 
 
+                                                  Map<String,Object> houseMap =new HashMap<>();
+                                                  houseMap.put("house_image_uri",download_uri.toString());
+                                                  houseMap.put("title",title);
+                                                  houseMap.put("details",details);
+                                                  houseMap.put("user_id",current_user_id);
+                                                  houseMap.put("timestamp", FieldValue.serverTimestamp());
+                                                  houseMap.put("location",geoPoint);
+                                                  houseMap.put("name",name2);
+                                                  //houseMap.put("area",userArea);
+                                                  houseMap.put("county",userCity);
+                                                  houseMap.put("post_date", new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date()));
 
+                                                  final Map<String,Object> notificationMap =new HashMap<>();
+                                                  notificationMap.put("condition",CONDITION);
+                                                  notificationMap.put("description",details);
+                                                  notificationMap.put("from",current_user_id);
+                                                  notificationMap.put("status",STATUS);
+                                                  notificationMap.put("timestamp", FieldValue.serverTimestamp());
 
-                                                firebaseFirestore.collection("Emergency_Posts").document()
-                                                        .set(houseMap)
-                                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                            @Override
-                                                            public void onSuccess(Void aVoid) {
-                                                                Toast.makeText(PostEmergency.this,"Emergency details sent",Toast.LENGTH_LONG).show();
 
 
 
 
-                                                                //notification
-                                                                firebaseFirestore.collection("Dispatcher_Notification").document().set(notificationMap).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                    @Override
-                                                                    public void onSuccess(Void aVoid) {
 
-                                                                        Toast.makeText(PostEmergency.this,"Good",Toast.LENGTH_LONG).show();
+                                                  firebaseFirestore.collection("Emergency_Posts").document()
+                                                          .set(houseMap)
+                                                          .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                              @Override
+                                                              public void onSuccess(Void aVoid) {
+                                                                  Toast.makeText(PostEmergency.this,"Emergency details sent",Toast.LENGTH_LONG).show();
 
 
-                                                                    }
-                                                                });
 
-                                                                startActivity(new Intent(PostEmergency.this,EmergencyFeeds.class));
 
+                                                                  //notification
+                                                                  firebaseFirestore.collection("Dispatcher_Notification").document().set(notificationMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                      @Override
+                                                                      public void onSuccess(Void aVoid) {
 
+                                                                          Toast.makeText(PostEmergency.this,"Good",Toast.LENGTH_LONG).show();
 
 
-                                                            }
-                                                        })
-                                                        .addOnFailureListener(new OnFailureListener() {
-                                                            @Override
-                                                            public void onFailure(@NonNull Exception e) {
+                                                                      }
+                                                                  });
 
-                                                                Toast.makeText(PostEmergency.this,"Error sending"+e.getMessage(),Toast.LENGTH_LONG).show();
+                                                                  startActivity(new Intent(PostEmergency.this,EmergencyFeeds.class));
 
 
-                                                            }
 
 
-                                                        });
+                                                              }
+                                                          })
+                                                          .addOnFailureListener(new OnFailureListener() {
+                                                              @Override
+                                                              public void onFailure(@NonNull Exception e) {
 
+                                                                  Toast.makeText(PostEmergency.this,"Error sending"+e.getMessage(),Toast.LENGTH_LONG).show();
 
 
-                                            } else {
+                                                              }
 
 
-                                                Toast.makeText(PostEmergency.this, "Couldn't fetch some user data", Toast.LENGTH_LONG).show();
+                                                          });
 
 
-                                            }
-                                        } else {
 
+                                              } else {
 
-                                            String error = task.getException().getMessage();
-                                            Toast.makeText(PostEmergency.this, "(FIRESTORE RETRIEVE ERROR):" + error, Toast.LENGTH_LONG).show();
 
+                                                  Toast.makeText(PostEmergency.this, "Couldn't fetch some user data", Toast.LENGTH_LONG).show();
 
-                                        }
 
+                                              }
+                                          } else {
 
-                                    }
-                                });
 
+                                              String error = task.getException().getMessage();
+                                              Toast.makeText(PostEmergency.this, "(FIRESTORE RETRIEVE ERROR):" + error, Toast.LENGTH_LONG).show();
 
 
+                                          }
 
 
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
+                                      }
+                                  });
 
 
-                                Toast.makeText(PostEmergency.this,"Error uploading:"+ e.getMessage(),Toast.LENGTH_LONG).show();
 
 
-                            }
-                        });
 
+                              }
+                          }).addOnFailureListener(new OnFailureListener() {
+                              @Override
+                              public void onFailure(@NonNull Exception e) {
 
 
+                                  Toast.makeText(PostEmergency.this,"Error uploading:"+ e.getMessage(),Toast.LENGTH_LONG).show();
 
 
+                              }
+                          });
 
 
-                    }else{
 
-                        Toast.makeText(PostEmergency.this,"ERROR UPLOADING DETAILS",Toast.LENGTH_LONG).show();
-                        progressDialog.dismiss();
 
 
-                    }
 
-                }
-            });
 
+                      }else{
 
-        } else {
+                          Toast.makeText(PostEmergency.this,"ERROR UPLOADING DETAILS",Toast.LENGTH_LONG).show();
+                          progressDialog.dismiss();
 
-            DocumentReference docRef = firebaseFirestore.collection("users").document(current_user_id);
-            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @RequiresApi(api = Build.VERSION_CODES.N)
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
 
-                        DocumentSnapshot document = task.getResult();
-                        if (document.exists()) {
+                      }
 
-                            String name2 = task.getResult().getString("name");
+                  }
+              });
 
-                            //combine all details and send to database
 
+          } else {
 
-                            Map<String,Object> houseMap =new HashMap<>();
-                            houseMap.put("title",title);
-                            houseMap.put("details",details);
-                            houseMap.put("user_id",current_user_id);
-                            houseMap.put("timestamp", FieldValue.serverTimestamp());
-                            houseMap.put("location",geoPoint);
-                            houseMap.put("house_image_uri",null);
-                            houseMap.put("name",name2);
-                            //houseMap.put("area",userArea);
-                            houseMap.put("county",userCity);
+              DocumentReference docRef = firebaseFirestore.collection("users").document(current_user_id);
+              docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                  @RequiresApi(api = Build.VERSION_CODES.N)
+                  @Override
+                  public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                      if (task.isSuccessful()) {
 
+                          DocumentSnapshot document = task.getResult();
+                          if (document.exists()) {
 
+                              String name2 = task.getResult().getString("name");
 
+                              //combine all details and send to database
 
-                            firebaseFirestore.collection("Emergency_Posts").document()
-                                    .set(houseMap)
-                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void aVoid) {
-                                            Toast.makeText(PostEmergency.this,"Emergency details sent",Toast.LENGTH_LONG).show();
 
-                                            startActivity(new Intent(PostEmergency.this,EmergencyFeeds.class));
+                              Map<String,Object> houseMap =new HashMap<>();
+                              houseMap.put("title",title);
+                              houseMap.put("details",details);
+                              houseMap.put("user_id",current_user_id);
+                              houseMap.put("timestamp", FieldValue.serverTimestamp());
+                              houseMap.put("location",geoPoint);
+                              houseMap.put("house_image_uri",null);
+                              houseMap.put("name",name2);
+                              //houseMap.put("area",userArea);
+                              houseMap.put("county",userCity);
 
 
-                                        }
-                                    })
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
 
-                                            Toast.makeText(PostEmergency.this,"Error sending",Toast.LENGTH_LONG).show();
 
+                              firebaseFirestore.collection("Emergency_Posts").document()
+                                      .set(houseMap)
+                                      .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                          @Override
+                                          public void onSuccess(Void aVoid) {
+                                              Toast.makeText(PostEmergency.this,"Emergency details sent",Toast.LENGTH_LONG).show();
 
-                                        }
+                                              startActivity(new Intent(PostEmergency.this,EmergencyFeeds.class));
 
 
-                                    });
+                                          }
+                                      })
+                                      .addOnFailureListener(new OnFailureListener() {
+                                          @Override
+                                          public void onFailure(@NonNull Exception e) {
 
+                                              Toast.makeText(PostEmergency.this,"Error sending",Toast.LENGTH_LONG).show();
 
 
+                                          }
 
 
+                                      });
 
 
 
-                        } else {
 
 
-                            Toast.makeText(PostEmergency.this, "Couldn't fetch current user data", Toast.LENGTH_LONG).show();
 
 
-                        }
-                    } else {
 
+                          } else {
 
-                        String error = task.getException().getMessage();
-                        Toast.makeText(PostEmergency.this, "(FIRESTORE RETRIEVE ERROR):" + error, Toast.LENGTH_LONG).show();
 
+                              Toast.makeText(PostEmergency.this, "Couldn't fetch current user data", Toast.LENGTH_LONG).show();
 
-                    }
 
+                          }
+                      } else {
 
-                }
-            });
 
+                          String error = task.getException().getMessage();
+                          Toast.makeText(PostEmergency.this, "(FIRESTORE RETRIEVE ERROR):" + error, Toast.LENGTH_LONG).show();
 
 
+                      }
 
 
+                  }
+              });
 
 
 
-        }
+
+
+
+
+
+          }
+
+
+
+
+
+
+      }
+
 
 
 

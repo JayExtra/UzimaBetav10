@@ -68,6 +68,8 @@ public class SingleEmergencyPost extends AppCompatActivity {
 
     private List<Comments>commentsList;
 
+    String emTitle;
+
     List<Address> adresses;
     Double lat, lng;
 
@@ -82,10 +84,17 @@ public class SingleEmergencyPost extends AppCompatActivity {
         user_id = firebaseAuth.getCurrentUser().getUid();
         firebaseFirestore = FirebaseFirestore.getInstance();
 
+        //retrieve post id
+        emergency_post_id = getIntent().getStringExtra("DOCUMENT_ID");
+
+        //RETRIEVE DETAILS
+        retieveDetails();
+
         //toolbar setup
         Toolbar toolbar = findViewById(R.id.single_post_toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("");
+        toolbar.setTitleTextColor(getResources().getColor(android.R.color.black));
+        getSupportActionBar().setTitle("Emergency Details");
 
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
 
@@ -97,8 +106,6 @@ public class SingleEmergencyPost extends AppCompatActivity {
             }
         });
 
-        //retrieve post id
-        emergency_post_id = getIntent().getStringExtra("DOCUMENT_ID");
 
 
         //setup widgets
@@ -121,10 +128,10 @@ public class SingleEmergencyPost extends AppCompatActivity {
         comment_list_all.setAdapter(commentsRecyclerAdapter);
 
 
-        if(locGeo == null){
+       /* if(locGeo == null){
             navButton.setVisibility(View.INVISIBLE);
         }
-
+*/
 
         //navigation button
         navButton.setOnClickListener(new View.OnClickListener() {
@@ -200,6 +207,10 @@ public class SingleEmergencyPost extends AppCompatActivity {
         });
 
 
+    }
+
+    public void retieveDetails(){
+
         //retrieve post details
         DocumentReference docRef = firebaseFirestore.collection("Emergency_Feeds").document(emergency_post_id);
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -220,6 +231,7 @@ public class SingleEmergencyPost extends AppCompatActivity {
                         String name2 = task.getResult().getString("name");
 
                         locGeo = location;
+                        emTitle = title;
 
                         if (location == null){
 
@@ -288,12 +300,12 @@ public class SingleEmergencyPost extends AppCompatActivity {
 
                             //******replacing the dummy image with real profile picture******
                             RequestOptions placeholderRequest = new RequestOptions();
-                            placeholderRequest.placeholder(R.drawable.grey_background);
+                            placeholderRequest.placeholder(R.drawable.alaert_icon);
 
                             Glide.with(SingleEmergencyPost.this).setDefaultRequestOptions(placeholderRequest).load(image_uri).into(emergencyImage);
                         } else {
 
-                           emergencyImage.setImageResource(R.drawable.alaert_icon);
+                            emergencyImage.setImageResource(R.drawable.alaert_icon);
 
                         }
 
@@ -301,7 +313,7 @@ public class SingleEmergencyPost extends AppCompatActivity {
                     } else {
 
 
-                        Toast.makeText(SingleEmergencyPost.this, "DATA DOES NOT EXISTS,PLEASE REGISTER", Toast.LENGTH_LONG).show();
+                        Toast.makeText(SingleEmergencyPost.this, "DATA ON THIS POST DOESN'T EXIST", Toast.LENGTH_LONG).show();
 
 
                     }
@@ -317,6 +329,8 @@ public class SingleEmergencyPost extends AppCompatActivity {
 
             }
         });
+
+
 
 
 

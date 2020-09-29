@@ -403,25 +403,35 @@ public class MainActivity extends AppCompatActivity {
 
         geocoder = new Geocoder(this, Locale.getDefault());
 
-        try {
 
-            adresses = geocoder.getFromLocation(lat, lng, 1);
-            String address = adresses.get(0).getAddressLine(0);
+        if(lat!=0 && lng!=0){
 
-            String fulladdress = address + "";
-            String area = adresses.get(0).getLocality();
-            String city = adresses.get(0).getAdminArea();
+            try {
 
-            userArea = area;
-            userCity = city;
+                adresses = geocoder.getFromLocation(lat, lng, 1);
+                String address = adresses.get(0).getAddressLine(0);
 
-            Toast.makeText(MainActivity.this ,"Location:" + userArea + userCity , Toast.LENGTH_LONG).show();
+                String fulladdress = address + "";
+                String area = adresses.get(0).getLocality();
+                String city = adresses.get(0).getAdminArea();
+
+                userArea = area;
+                userCity = city;
+
+                Toast.makeText(MainActivity.this ,"Location:" + userArea + userCity , Toast.LENGTH_LONG).show();
 
 
 
-        } catch (IOException e) {
-            e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+        }else{
+
+            Toast.makeText(MainActivity.this , "Cannot get your current location",Toast.LENGTH_LONG).show();
         }
+
 
 
     }
