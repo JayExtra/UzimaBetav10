@@ -314,6 +314,7 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
                         userMap.put("user_id",user_id);
                         userMap.put("county",userCity);
                         userMap.put("time", formattedDate);
+                        userMap.put("condition" , "reported");
 
 
                         firebaseFirestore.collection("Ambulance_Requests").document()
@@ -481,6 +482,7 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
                         userMap.put("user_id",user_id);
                         userMap.put("county",userCity);
                         userMap.put("time", formattedDate);
+                        userMap.put("condition" , "personal");
 
 
                         firebaseFirestore.collection("Ambulance_Requests").document()
