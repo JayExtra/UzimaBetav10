@@ -275,6 +275,7 @@ public class PostEmergency extends AppCompatActivity {
                                                   houseMap.put("name",name2);
                                                   //houseMap.put("area",userArea);
                                                   houseMap.put("county",userCity);
+                                                  houseMap.put("condition" , "new");
                                                   houseMap.put("post_date", new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date()));
 
                                                   final Map<String,Object> notificationMap =new HashMap<>();
@@ -412,6 +413,7 @@ public class PostEmergency extends AppCompatActivity {
                               houseMap.put("name",name2);
                               //houseMap.put("area",userArea);
                               houseMap.put("county",userCity);
+                              houseMap.put("condition" , "new");
 
 
 
