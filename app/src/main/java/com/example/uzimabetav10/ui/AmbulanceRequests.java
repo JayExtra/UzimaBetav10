@@ -330,6 +330,8 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
 
                                         sendNotificationElse(user_id, description ,patient);
 
+                                        updateRequestCount();
+
                                         myDialog2.dismiss();
 
                                     }
@@ -364,6 +366,21 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
             }
         });
 
+
+
+    }
+
+    private void updateRequestCount() {
+
+//get todays month
+        Calendar cal=Calendar.getInstance();
+        SimpleDateFormat month_date = new SimpleDateFormat("MMMM");
+        String month_name = month_date.format(cal.getTime());
+
+        DocumentReference monthRef = firebaseFirestore.collection("Dispatch_Counts").document("Requests");
+
+// Atomically increment the population of the city by 50.
+        monthRef.update(month_name, FieldValue.increment(1));
 
 
     }
@@ -496,6 +513,7 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
 
 
                                         sendNotification(user_id ,descriptionTxt,name2);
+                                        updateRequestCount();
 
                                        descriptionText.setText("");
 
@@ -561,6 +579,7 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
                     public void onSuccess(Void aVoid) {
 
                         Toast.makeText(AmbulanceRequests.this,"Admin Notified",Toast.LENGTH_SHORT).show();
+
 
                     }
                 }).addOnFailureListener(new OnFailureListener() {
