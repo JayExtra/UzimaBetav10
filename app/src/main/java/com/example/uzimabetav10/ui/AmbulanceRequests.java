@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
@@ -16,14 +17,17 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Address;
 import android.location.Geocoder;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -42,6 +46,11 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -63,8 +72,12 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
     private ProgressDialog progressDialog;
     private FirebaseAuth mAuth;
     private FirebaseFirestore firebaseFirestore;
+    private StorageReference storageReference;
     private String user_id, userCity;
     private EditText descText, descriptionText, patientName, latText, longText, phoneNum;
+    private Uri mainImageURI=null;
+    private Uri otherImageUri = null;
+    public boolean isChanged = false;
 
     private ImageView backImage;
     //String lat , lng;
@@ -72,7 +85,12 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
     List<Address> adresses;
     Geocoder geocoder;
     String latitude, longitude;
+    ImageButton otherImageBtn;
+    TextView otherImageUrl;
     double lat, lng;
+
+    private Button attatchImage;
+    private TextView imageUrl;
 
 
     @Override
@@ -102,6 +120,7 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
         mAuth = FirebaseAuth.getInstance();
         user_id = mAuth.getCurrentUser().getUid();
         firebaseFirestore = FirebaseFirestore.getInstance();
+        storageReference = FirebaseStorage.getInstance().getReference();
 
         //check if user is suspended
         checkForSuspension();
@@ -133,6 +152,8 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
         sendButton = findViewById(R.id.send_button);
         ambulanceTxt = findViewById(R.id.ambulance_txt);
         buttonElse = findViewById(R.id.else_button);
+        attatchImage = findViewById(R.id.button_attatch_image);
+        imageUrl = findViewById(R.id.img_txt);
 
 
         //setupp spinner adapter
@@ -146,6 +167,13 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(AmbulanceRequests.this, AmbulanceCover.class));
+            }
+        });
+
+        attatchImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                BringImagePicker();
             }
         });
 
@@ -165,7 +193,7 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
                 buttonYes = (Button) myDialog.findViewById(R.id.button_yes);
                 TextView dialogText = (TextView) myDialog.findViewById(R.id.dialog_text);
 
-                dialogText.setText(" This service for people who are within Nairobi county only , if you are not please contact +254789632451");
+                dialogText.setText("You are about to send an ambulance request, do you wish to proceed?");
 
 
                 buttonCancel.setOnClickListener(new View.OnClickListener() {
@@ -205,6 +233,9 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
                 patientName = myDialog2.findViewById(R.id.patient_text);
                 phoneNum = myDialog2.findViewById(R.id.phone_num);
 
+                otherImageBtn = myDialog2.findViewById(R.id.other_image_btn);
+                otherImageUrl = myDialog2.findViewById(R.id.otherImageUrl);
+
 
                 //final String description = descText.getText().toString();
                 //final String patient = patientName.getText().toString();
@@ -243,12 +274,18 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
                         myDialog2.dismiss();
                     }
                 });
+
+                otherImageBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        BringImagePicker();
+                    }
+                });
                 buttonSend.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
 
-                        progressDialog.setMessage("Sending emergency Details...");
-                        progressDialog.show();
+
 
                         //updateDatabase();
 
@@ -259,8 +296,8 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
                         Date c = Calendar.getInstance().getTime();
                         Toast.makeText(myDialog2.getContext(), "The current time is:" + c, Toast.LENGTH_SHORT).show();
 
-                        SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
-                        String formattedDate = df.format(c);
+                        SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy");
+                        final String formattedDate = df.format(c);
 
 
                         Toast.makeText(myDialog.getContext(), "Patient details are" + patient + description, Toast.LENGTH_SHORT).show();
@@ -287,54 +324,66 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
                             e.printStackTrace();
                         }
 
+                        if(TextUtils.isEmpty(description)){
 
-                        Map<String, Object> userMap = new HashMap<>();
+                            descText.setError("Please input the description");
+                        }else if(TextUtils.isEmpty(patient)){
 
-                        userMap.put("name", patient);
-                        userMap.put("phone_number", phone);
-                        userMap.put("email", "n/a");
-                        userMap.put("location", geopoint);
-                        userMap.put("incident", incident_type2);
-                        userMap.put("description", description);
-                        userMap.put("user_id", user_id);
-                        userMap.put("county", userCity);
-                        userMap.put("time", formattedDate);
-                        userMap.put("condition", "reported");
-                        userMap.put("status", "new");
+                            patientName.setError("Please indicate the patients name");
+                        }else if(TextUtils.isEmpty(phone)){
+
+                            phoneNum.setError("A phone number is required to be contacted");
+                        }else{
+
+                            if (isChanged) {
+                                ///checks first if the profile image is changed if it is then proceeds
+
+                                progressDialog.setMessage("Sending emergency Details...");
+                                progressDialog.show();
 
 
-                        firebaseFirestore.collection("Ambulance_Requests").document()
-                                .set(userMap)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                StorageReference image_path = storageReference.child("Request_Pictures").child(user_id + ".jpg");
+
+                                image_path.putFile(mainImageURI).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                                     @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Toast.makeText(AmbulanceRequests.this, "Ambulance request sent", Toast.LENGTH_LONG).show();
+                                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
 
-                                        descText.setText("");
-                                        progressDialog.dismiss();
+                                        if (task.isSuccessful()) {
 
-                                        sendNotificationElse(user_id, description, patient);
+                                            //****call on method that will store the user data on the firestore database****
 
-                                        updateRequestCount();
+                                            storeFirestore2(task,patient,phone,description,geopoint,userCity,formattedDate,incident_type2);
 
-                                        updateCountyCount(userCity);
 
-                                        myDialog2.dismiss();
+                                        } else {
+
+                                            String error = task.getException().getMessage();
+                                            progressDialog.dismiss();
+
+                                            Toast.makeText(AmbulanceRequests.this, "(IMAGE ERROR):" + error, Toast.LENGTH_LONG).show();
+
+                                            finish();
+
+                                        }
+
+
 
                                     }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-
-                                        Toast.makeText(AmbulanceRequests.this, "FIRESTORE ERROR: COULD NOT SEND", Toast.LENGTH_LONG).show();
-
-                                        finish();
-
-                                    }
-
-
                                 });
+
+                            }else{
+
+                                storeFirestore2(null,patient,phone,description,geopoint,userCity,formattedDate,incident_type2);
+                                Toast.makeText(AmbulanceRequests.this, "FIRESTORE ERROR 1:", Toast.LENGTH_LONG).show();
+
+
+
+                            }
+
+
+                        }
+
+
 
                     }
                 });
@@ -346,6 +395,145 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
 
             }
         });
+
+
+    }
+
+    private void storeFirestore2(Task<UploadTask.TaskSnapshot> task, final String patient, final String phone, final String description, final GeoPoint geopoint, final String userCity, final String formattedDate, final String incident_type2) {
+
+        if (task!=null) {
+
+            storageReference.child("Request_Pictures").child(user_id + ".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+
+
+
+                    Map<String, Object> userMap = new HashMap<>();
+
+                    userMap.put("name", patient);
+                    userMap.put("phone_number", phone);
+                    userMap.put("email", "n/a");
+                    userMap.put("location", geopoint);
+                    userMap.put("incident", incident_type2);
+                    userMap.put("description", description);
+                    userMap.put("user_id", user_id);
+                    userMap.put("county", userCity);
+                    userMap.put("time", formattedDate);
+                    userMap.put("image" , uri.toString());
+                    userMap.put("condition", "reported");
+                    userMap.put("status", "new");
+                    userMap.put("timestamp" , FieldValue.serverTimestamp());
+
+
+                    firebaseFirestore.collection("Ambulance_Requests").document()
+                            .set(userMap)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Toast.makeText(AmbulanceRequests.this, "Ambulance request sent", Toast.LENGTH_LONG).show();
+
+                                    descText.setText("");
+                                    progressDialog.dismiss();
+
+                                    sendNotificationElse(user_id, description, patient);
+
+                                    updateRequestCount();
+
+                                    updateCountyCount(userCity);
+
+                                    myDialog2.dismiss();
+
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+
+                                    Toast.makeText(AmbulanceRequests.this, "FIRESTORE ERROR: COULD NOT SEND", Toast.LENGTH_LONG).show();
+
+                                    finish();
+
+                                }
+
+
+                            });
+
+                }
+            });
+
+
+        }else{
+
+
+            storageReference.child("Request_Pictures").child(user_id + ".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+
+                    uri = mainImageURI;
+
+
+
+                    Map<String, Object> userMap = new HashMap<>();
+
+                    userMap.put("name", patient);
+                    userMap.put("phone_number", phone);
+                    userMap.put("email", "n/a");
+                    userMap.put("location", geopoint);
+                    userMap.put("incident", incident_type2);
+                    userMap.put("description", description);
+                    userMap.put("user_id", user_id);
+                    userMap.put("county", userCity);
+                    userMap.put("time", formattedDate);
+                    userMap.put("image" , uri.toString());
+                    userMap.put("condition", "reported");
+                    userMap.put("status", "new");
+                    userMap.put("timestamp" , FieldValue.serverTimestamp());
+
+
+                    firebaseFirestore.collection("Ambulance_Requests").document()
+                            .set(userMap)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Toast.makeText(AmbulanceRequests.this, "Ambulance request sent", Toast.LENGTH_LONG).show();
+
+                                    descText.setText("");
+                                    progressDialog.dismiss();
+
+                                    sendNotificationElse(user_id, description, patient);
+
+                                    updateRequestCount();
+
+                                    updateCountyCount(userCity);
+
+                                    myDialog2.dismiss();
+
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+
+                                    Toast.makeText(AmbulanceRequests.this, "FIRESTORE ERROR: COULD NOT SEND", Toast.LENGTH_LONG).show();
+
+                                    finish();
+
+                                }
+
+
+                            });
+
+                }
+            });
+
+
+
+
+
+
+
+        }
 
 
     }
@@ -460,55 +648,54 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
                     assert document != null;
                     if (document.exists()) {
                         final String name2 = task.getResult().getString("name");
-                        String phn_num = task.getResult().getString("phone");
-                        String email = task.getResult().getString("email");
+                        final String phn_num = task.getResult().getString("phone");
+                        final String email = task.getResult().getString("email");
 
                         final String descriptionTxt = descriptionText.getText().toString();
 
-
-                        Map<String, Object> userMap = new HashMap<>();
-
-                        userMap.put("name", name2);
-                        userMap.put("phone_number", phn_num);
-                        userMap.put("email", email);
-                        userMap.put("location", geopoint);
-                        userMap.put("incident", incident_type);
-                        userMap.put("description", descriptionTxt);
-                        userMap.put("user_id", user_id);
-                        userMap.put("county", userCity);
-                        userMap.put("time", formattedDate);
-                        userMap.put("condition", "personal");
-                        userMap.put("status", "new");
+                        if (isChanged) {        ///checks first if the profile image is changed if it is then proceeds
 
 
-                        firebaseFirestore.collection("Ambulance_Requests").document()
-                                .set(userMap)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Toast.makeText(AmbulanceRequests.this, "Ambulance request sent", Toast.LENGTH_LONG).show();
+                            StorageReference image_path = storageReference.child("Request_Pictures").child(user_id + ".jpg");
+
+                            image_path.putFile(mainImageURI).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+
+                                    if (task.isSuccessful()) {
+
+                                        //****call on method that will store the user data on the firestore database****
+
+                                        storeFirestore(task,name2,phn_num,email,descriptionTxt,geopoint,userCity,formattedDate,incident_type);
 
 
-                                        sendNotification(user_id, descriptionTxt, name2);
-                                        updateRequestCount();
-                                        updateCountyCount(userCity);
+                                    } else {
 
-                                        descriptionText.setText("");
+                                        String error = task.getException().getMessage();
+                                        progressDialog.dismiss();
 
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-
-                                        Toast.makeText(AmbulanceRequests.this, "FIRESTORE ERROR: COULD NOT SEND", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(AmbulanceRequests.this, "(IMAGE ERROR):" + error, Toast.LENGTH_LONG).show();
 
                                         finish();
 
                                     }
 
 
-                                });
+                                }
+                            });
+
+
+                        }else{
+
+                            storeFirestore(null,name2,phn_num,email,descriptionTxt,geopoint,userCity,formattedDate,incident_type);
+                            Toast.makeText(AmbulanceRequests.this, "FIRESTORE ERROR 1:", Toast.LENGTH_LONG).show();
+
+
+
+
+                        }
+
+
 
 
 //19-10-1996
@@ -529,6 +716,170 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
 
             }
         });
+
+
+    }
+
+    private void storeFirestore(Task<UploadTask.TaskSnapshot> task, final String name2, final String phn_num, final String email, final String descriptionTxt, final GeoPoint geopoint, final String userCity, final String formattedDate, final String incident_type) {
+
+
+
+        if (task!=null) {
+
+            storageReference.child("Request_Pictures").child(user_id+".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+
+
+
+                    Map<String, Object> userMap = new HashMap<>();
+
+                    userMap.put("name", name2);
+                    userMap.put("phone_number", phn_num);
+                    userMap.put("email", email);
+                    userMap.put("location", geopoint);
+                    userMap.put("incident", incident_type);
+                    userMap.put("description", descriptionTxt);
+                    userMap.put("user_id", user_id);
+                    userMap.put("county", userCity);
+                    userMap.put("time", formattedDate);
+                    userMap.put("condition", "personal");
+                    userMap.put("status", "new");
+                    userMap.put("image" , uri.toString());
+                    userMap.put("timestamp" , FieldValue.serverTimestamp());
+
+
+
+
+
+
+
+                    firebaseFirestore.collection("Ambulance_Requests").document()
+                            .set(userMap)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Toast.makeText(AmbulanceRequests.this, "Ambulance request sent", Toast.LENGTH_LONG).show();
+
+
+                                    sendNotification(user_id, descriptionTxt, name2);
+                                    updateRequestCount();
+                                    updateCountyCount(userCity);
+
+                                    descriptionText.setText("");
+                                    imageUrl.setText("");
+                                    progressDialog.dismiss();
+
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+
+                                    Toast.makeText(AmbulanceRequests.this, "FIRESTORE ERROR: COULD NOT SEND", Toast.LENGTH_LONG).show();
+
+                                    finish();
+
+                                }
+
+
+                            });
+
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+
+                    Toast.makeText(AmbulanceRequests.this, "FIRESTORE ERROR: COULD NOT SEND"+e.getMessage(), Toast.LENGTH_LONG).show();
+
+
+                }
+            });
+
+        }else{
+
+
+            storageReference.child("Ambulance_Requests").child(user_id+".jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+
+                    uri=mainImageURI;
+
+                    Map<String, Object> userMap = new HashMap<>();
+
+                    userMap.put("name", name2);
+                    userMap.put("phone_number", phn_num);
+                    userMap.put("email", email);
+                    userMap.put("location", geopoint);
+                    userMap.put("incident", incident_type);
+                    userMap.put("description", descriptionTxt);
+                    userMap.put("user_id", user_id);
+                    userMap.put("county", userCity);
+                    userMap.put("time", formattedDate);
+                    userMap.put("condition", "personal");
+                    userMap.put("status", "new");
+                    userMap.put("image" , uri.toString());
+                    userMap.put("timestamp" , FieldValue.serverTimestamp());
+
+
+
+
+
+
+
+                    firebaseFirestore.collection("Ambulance_Requests").document()
+                            .set(userMap)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Toast.makeText(AmbulanceRequests.this, "Ambulance request sent", Toast.LENGTH_LONG).show();
+
+
+                                    sendNotification(user_id, descriptionTxt, name2);
+                                    updateRequestCount();
+                                    updateCountyCount(userCity);
+
+                                    descriptionText.setText("");
+                                    imageUrl.setText("");
+
+                                    progressDialog.dismiss();
+
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+
+                                    Toast.makeText(AmbulanceRequests.this, "FIRESTORE ERROR: COULD NOT SEND", Toast.LENGTH_LONG).show();
+
+                                    finish();
+
+                                }
+
+
+                            });
+
+
+
+
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+
+                    Toast.makeText(AmbulanceRequests.this, "FIRESTORE ERROR at else: COULD NOT SEND"+e.getMessage(), Toast.LENGTH_LONG).show();
+
+
+                }
+            });
+
+
+
+
+
+
+        }
+
 
 
     }
@@ -703,6 +1054,46 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
 
             }
         });
+
+
+    }
+
+    private void BringImagePicker() {
+
+        // start picker to get image for cropping and then use the image in cropping activity
+        CropImage.activity()
+                .setGuidelines(CropImageView.Guidelines.ON)
+                .setAspectRatio(1, 1)
+                .start(this);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if (resultCode == Activity.RESULT_OK) {
+
+//****replace image with new image******
+                mainImageURI = result.getUri();
+                otherImageUri = result.getUri();
+
+                imageUrl.setText(mainImageURI.toString());
+
+                otherImageUrl.setText(otherImageUri.toString());
+
+
+
+                isChanged=true;
+
+
+            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+
+                Exception error= result.getError();
+
+            }
+        }
 
 
     }
