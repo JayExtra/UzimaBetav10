@@ -338,6 +338,8 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
                             if (isChanged) {
                                 ///checks first if the profile image is changed if it is then proceeds
 
+                                otherImageUrl.setText(otherImageUri.toString());
+
                                 progressDialog.setMessage("Sending emergency Details...");
                                 progressDialog.show();
 
@@ -1081,7 +1083,7 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
 
                 imageUrl.setText(mainImageURI.toString());
 
-                otherImageUrl.setText(otherImageUri.toString());
+
 
 
 
