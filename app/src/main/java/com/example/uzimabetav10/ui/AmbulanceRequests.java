@@ -20,6 +20,7 @@ import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -92,12 +93,23 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
     private Button attatchImage;
     private TextView imageUrl;
 
+    //private LocationBroadcastReceiver receiver;
+    Handler handler = new Handler();
+    Runnable runnable;
+    int delay = 10*1000; //Delay for 10 seconds.  One second = 1000 milliseconds.
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ambulance_requests);
 
+        //firebase setup
+        FirebaseApp.initializeApp(this);
+        mAuth = FirebaseAuth.getInstance();
+        user_id = mAuth.getCurrentUser().getUid();
+        firebaseFirestore = FirebaseFirestore.getInstance();
+        storageReference = FirebaseStorage.getInstance().getReference();
 
         if (Build.VERSION.SDK_INT >= 23) {
             if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -114,13 +126,6 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
             //start the location service
             startService();
         }
-
-        //firebase setup
-        FirebaseApp.initializeApp(this);
-        mAuth = FirebaseAuth.getInstance();
-        user_id = mAuth.getCurrentUser().getUid();
-        firebaseFirestore = FirebaseFirestore.getInstance();
-        storageReference = FirebaseStorage.getInstance().getReference();
 
         //check if user is suspended
         checkForSuspension();
@@ -144,6 +149,9 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
         });
 
         progressDialog = new ProgressDialog(this);
+
+
+
 
 
         //map widgets
@@ -401,6 +409,15 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
 
     }
 
+
+// If onPause() is not included the threads will double up when you
+// reload the activity
+
+
+
+
+
+
     private void storeFirestore2(Task<UploadTask.TaskSnapshot> task, final String patient, final String phone, final String description, final GeoPoint geopoint, final String userCity, final String formattedDate, final String incident_type2) {
 
         if (task!=null) {
@@ -576,7 +593,8 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
                 longitude = Double.toString(lng);
                 latitude = Double.toString(lat);
 
-                Toast.makeText(AmbulanceRequests.this, "Help! Location:.\nLatitude:" + latitude + "\nLongitude:" + longitude, Toast.LENGTH_SHORT).show();
+                Toast.makeText(AmbulanceRequests.this, "Location:.\nLatitude:" + latitude + "\nLongitude:" + longitude, Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "onReceive: Location lat:" + latitude + "Longitude:" + longitude);
 
 
             }
@@ -1040,7 +1058,7 @@ public class AmbulanceRequests extends AppCompatActivity implements AdapterView.
 
                         //progressDialog.dismiss();
 
-                        Toast.makeText(AmbulanceRequests.this, "DATA DOES NOT EXISTS,PLEASE CREATE YOUR PROFILE", Toast.LENGTH_LONG).show();
+                        Toast.makeText(AmbulanceRequests.this, "user not suspended", Toast.LENGTH_LONG).show();
                         // startActivity(new Intent(AmbulanceRequests.this, EditProfile.class));
 
 

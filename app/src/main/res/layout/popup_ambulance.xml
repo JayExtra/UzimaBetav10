@@ -139,7 +139,7 @@
                 android:background="@drawable/circle_shape_border"
                 android:ems="10"
                 android:hint="patient phone number"
-                android:inputType="textPersonName" />
+                android:inputType="number" />
 
             <ImageButton
                 android:id="@+id/other_image_btn"

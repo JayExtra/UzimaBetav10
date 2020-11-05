@@ -363,14 +363,14 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        handler.removeCallbacks(runnable); //stop handler when activity not visible
+       handler.removeCallbacks(runnable); //stop handler when activity not visible
         unregisterReceiver(receiver);
         super.onPause();
     }
 
 
     void startService(){
-         receiver = new LocationBroadcastReceiver();
+        receiver = new LocationBroadcastReceiver();
         IntentFilter filter = new IntentFilter("ACTION_LOC");
         registerReceiver(receiver , filter);
 
