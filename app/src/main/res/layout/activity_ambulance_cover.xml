@@ -95,28 +95,16 @@
             android:layout_marginTop="23dp"
             android:text="2. 24hrs medical helpline anytime from anywhere for medical advice." />
 
-        <TextView
-            android:id="@+id/textView44"
-            android:layout_width="350dp"
-            android:layout_height="37dp"
-            android:layout_below="@+id/textView43"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true"
-            android:layout_marginStart="20dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="16dp"
-            android:text="3. 20% off for every payment made through this application." />
-
         <Button
             android:id="@+id/button_proceed_pay"
             android:layout_width="177dp"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/textView44"
+            android:layout_below="@+id/textView43"
             android:layout_alignParentStart="true"
             android:layout_alignParentLeft="true"
             android:layout_marginStart="115dp"
             android:layout_marginLeft="115dp"
-            android:layout_marginTop="37dp"
+            android:layout_marginTop="90dp"
             android:background="#43A047"
             android:text="Proceed to pay" />
     </RelativeLayout>

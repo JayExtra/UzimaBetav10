@@ -145,7 +145,7 @@
                             android:layout_marginEnd="1dp"
                             android:layout_marginRight="1dp"
                             android:layout_marginBottom="13dp"
-                            android:text="My Wallet" />
+                            android:text="Payments" />
 
                     </RelativeLayout>
                 </androidx.cardview.widget.CardView>
@@ -280,11 +280,11 @@
                             android:layout_marginStart="13dp"
                             android:layout_marginLeft="13dp"
                             android:layout_marginTop="18dp"
-                            android:text="Latest Booking:"
+                            android:text="Cover Status:"
                             android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
 
                         <TextView
-                            android:id="@+id/date_text"
+                            android:id="@+id/date_textview"
                             android:layout_width="77dp"
                             android:layout_height="wrap_content"
                             android:layout_alignParentTop="true"
@@ -307,7 +307,7 @@
                             android:layout_marginLeft="13dp"
                             android:layout_marginTop="25dp"
                             android:layout_marginBottom="43dp"
-                            android:text="Cover remaining period"
+                            android:text="Cover expiry date:"
                             android:textAppearance="@android:style/TextAppearance.Material.Body1" />
 
                         <Button

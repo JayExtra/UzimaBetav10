@@ -5,11 +5,21 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Build;
+import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 
 import com.example.uzimabetav10.R;
+import com.example.uzimabetav10.mpesa.Item;
+import com.example.uzimabetav10.mpesa.MpesaResponse;
+import com.example.uzimabetav10.ui.CoverPayment;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
+import com.google.gson.Gson;
+
+import java.util.List;
 
 public class FirebaseMessagingService extends com.google.firebase.messaging.FirebaseMessagingService{
 
@@ -20,43 +30,101 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
 
         createNotificationChannel();
 
+        FirebaseApp.initializeApp(this);
 
-        String messageTitle = remoteMessage.getNotification().getTitle();
-        String messageBody = remoteMessage.getNotification().getBody();
-        String messageIcon = remoteMessage.getNotification().getIcon();
-        String click_action = remoteMessage.getNotification().getClickAction();
-        String dataMessage = remoteMessage.getData().get("message");
-        String dataFrom = remoteMessage.getData().get("from_user_id");
-        String dataTo = remoteMessage.getData().get("receiver_id");
+        String payload = remoteMessage.getData().get("payload");
 
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, getString(R.string.default_notification_channel_id))
-                .setSmallIcon(R.drawable.ic_allert)
-                .setContentTitle(messageTitle)
-                .setContentText(messageBody)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+        Gson gson = new Gson();
 
-        Intent resultIntent = new Intent (click_action);
-        resultIntent.putExtra("message" , dataMessage);
-        resultIntent.putExtra("from_user_id" , dataFrom);
-        resultIntent.putExtra("receiver_id" , dataTo);
+        MpesaResponse mpesaResponse = gson.fromJson(payload, MpesaResponse.class);
+        String id = mpesaResponse.getBody().getStkCallback().getCheckoutRequestID();
 
 
-        PendingIntent resultPendingIntent = PendingIntent.getActivity(
-                this,
-                0,
-                resultIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT
-        );
+        if (mpesaResponse.getBody().getStkCallback().getResultCode() != 0) {
 
-        mBuilder.setContentIntent(resultPendingIntent);
+            String reason = mpesaResponse.getBody().getStkCallback().getResultDesc();
+
+            CoverPayment.mpesaListener.sendFailed(reason);
+
+            String messageTitle = remoteMessage.getNotification().getTitle();
+            String messageBody = remoteMessage.getNotification().getBody();
+            String messageIcon = remoteMessage.getNotification().getIcon();
+            String click_action = remoteMessage.getNotification().getClickAction();
+            String dataMessage = remoteMessage.getData().get("message");
+            String dataFrom = remoteMessage.getData().get("from_user_id");
+            String dataTo = remoteMessage.getData().get("receiver_id");
+
+            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, getString(R.string.default_notification_channel_id))
+                    .setSmallIcon(R.drawable.ic_allert)
+                    .setContentTitle(messageTitle)
+                    .setContentText(messageBody)
+                    .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+            Intent resultIntent = new Intent (click_action);
+            resultIntent.putExtra("message" , dataMessage);
+            resultIntent.putExtra("from_user_id" , dataFrom);
+            resultIntent.putExtra("receiver_id" , dataTo);
 
 
-        int mNotificationId = (int) System.currentTimeMillis();
+            PendingIntent resultPendingIntent = PendingIntent.getActivity(
+                    this,
+                    0,
+                    resultIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT
+            );
 
-        NotificationManager mNotifyMgr =
-                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            mBuilder.setContentIntent(resultPendingIntent);
 
-        mNotifyMgr.notify(mNotificationId , mBuilder.build() );
+
+            int mNotificationId = (int) System.currentTimeMillis();
+
+            NotificationManager mNotifyMgr =
+                    (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+            mNotifyMgr.notify(mNotificationId , mBuilder.build() );
+
+
+
+
+        } else {
+
+            List<Item> list = mpesaResponse.getBody().getStkCallback().getCallbackMetadata().getItem();
+
+            String receipt = "";
+            String date = "";
+            String phone = "";
+            String amount = "";
+
+
+            for (Item item : list) {
+
+                if (item.getName().equals("MpesaReceiptNumber")) {
+                    receipt = item.getValue();
+                }
+                if (item.getName().equals("TransactionDate")) {
+                    date = item.getValue();
+                }
+                if (item.getName().equals("PhoneNumber")) {
+                    phone = item.getValue();
+
+                }
+                if (item.getName().equals("Amount")) {
+                    amount = item.getValue();
+                }
+
+            }
+            CoverPayment.mpesaListener.sendSuccesfull(amount, phone, date, receipt);
+            Log.d(
+                    "MetaData",
+                    "\nReceipt: $receipt\nDate: ${getDate(date)}\nPhone: $phone\nAmount: $amount"
+            );
+            //Log.d("NewDate", getDate(date.toLong()))
+        }
+
+        FirebaseMessaging.getInstance()
+                .unsubscribeFromTopic(id);
+
+
 
 
 
@@ -78,5 +146,10 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }
+    }
+
+    @Override
+    public void onNewToken(@NonNull String s) {
+        super.onNewToken(s);
     }
 }

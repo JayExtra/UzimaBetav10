@@ -6,7 +6,6 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.Manifest;
 import android.app.Dialog;
@@ -34,6 +33,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.uzimabetav10.ContactSupport;
 import com.example.uzimabetav10.LocationService.LocationService;
 import com.example.uzimabetav10.Models.SliderItem;
 import com.example.uzimabetav10.R;
@@ -62,6 +62,7 @@ import com.smarteist.autoimageslider.SliderView;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -78,9 +79,9 @@ public class MainActivity extends AppCompatActivity {
     private FloatingActionButton panicActionButton;
     private String user_id;
     private FirebaseFirestore firebaseFirestore;
-    private TextView verifyText;
+    private TextView verifyText , dateText , coverStatus;
 
-    private Button buttonOkay , btnVerify;
+    private Button buttonOkay , btnVerify , btnView;
 
     private LocationBroadcastReceiver receiver;
 
@@ -89,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
     List<Address> adresses;
     Geocoder geocoder;
     String userArea , userCity;
+    String TAG = "MainActivity:";
 
 
 
@@ -225,6 +227,19 @@ public class MainActivity extends AppCompatActivity {
         circleImage = findViewById(R.id.check_news);
         verifyText = findViewById(R.id.vrfy_txt);
         btnVerify = findViewById(R.id.vrfy_btn);
+        dateText = findViewById(R.id.date_textview);
+        coverStatus = findViewById(R.id.details_text);
+        btnView = findViewById(R.id.view_btn);
+
+
+
+        btnView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this , CoverPayment.class));
+                finish();
+            }
+        });
 
 
 
@@ -270,6 +285,8 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.single_post_toolbar);
         setSupportActionBar(toolbar);
+
+        getCoverStatus();
 
      /*   //Request permission to access user location
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
@@ -340,6 +357,131 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        getCoverStatus();
+        checkCoverStatus();
+
+    }
+
+    private void getCoverStatus() {
+
+
+        firebaseFirestore.collection("Members")
+                .document(user_id)
+                .addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Toast.makeText(MainActivity.this, "Error while loading!", Toast.LENGTH_SHORT).show();
+                            Log.d(TAG, e.toString());
+                            return;
+                        }
+                        if (documentSnapshot.exists()) {
+                            Date date = documentSnapshot.getTimestamp("expiry_date").toDate();
+                            String status = documentSnapshot.getString("status");
+
+                            if(status.equals(null) || status.equals("expired") ){
+
+                                dateText.setText("You are not currently in our ambulance cover plan or your plan has expired" +
+                                        ". Please click the button below to pay for one");
+                                coverStatus.setText("N/a");
+                                btnVerify.setVisibility(View.VISIBLE);
+
+                            }else{
+
+                                SimpleDateFormat sfd = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+                                String final_date = sfd.format(date);
+
+                                String message = "Expiry Date: "+final_date;
+
+                                coverStatus.setText(message);
+                                dateText.setText(status);
+                                btnView.setVisibility(View.GONE);
+
+
+
+                            }
+
+
+
+                        }
+                    }
+                });
+
+
+
+    }
+
+    private void checkCoverStatus() {
+
+
+        firebaseFirestore.collection("Members")
+                .document(user_id)
+                .addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Toast.makeText(MainActivity.this, "Error while loading!", Toast.LENGTH_SHORT).show();
+                            Log.d(TAG, e.toString());
+                            return;
+                        }
+                        if (documentSnapshot.exists()) {
+                            Date date = documentSnapshot.getTimestamp("expiry_date").toDate();
+                            String status = documentSnapshot.getString("status");
+
+                            SimpleDateFormat sfd = new SimpleDateFormat("dd-MM-yyyy");
+                            String expiry_date = sfd.format(date);
+
+                                Date c = Calendar.getInstance().getTime();
+                                String todays_date = sfd.format(c);
+
+
+                                if (expiry_date.compareTo(todays_date) == 0) {
+                                    Log.i("app", "Date is  Date c");
+
+                                    DocumentReference washingtonRef = firebaseFirestore.collection("Members").document(user_id);
+
+// Set the "isCapital" field of the city 'DC'
+                                    washingtonRef
+                                            .update("status", "expired")
+                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    Log.d(TAG, "DocumentSnapshot successfully updated!");
+                                                }
+                                            })
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    Log.w(TAG, "Error updating document", e);
+                                                }
+                                            });
+
+
+                                } else{
+
+                                    Toast.makeText(MainActivity.this , "Cover Status looks okay" , Toast.LENGTH_SHORT).show();
+
+
+
+                                }
+
+
+                        }else{
+
+                            Toast.makeText(MainActivity.this , "Cover Status Doesmt exist , please purchase one" , Toast.LENGTH_SHORT).show();
+
+                        }
+                    }
+                });
+
+
+
+    }
+
 
     @Override
     protected void onResume() {
@@ -370,6 +512,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     void startService(){
+
         receiver = new LocationBroadcastReceiver();
         IntentFilter filter = new IntentFilter("ACTION_LOC");
         registerReceiver(receiver , filter);
@@ -536,7 +679,9 @@ public class MainActivity extends AppCompatActivity {
                 return true;
 
             case R.id.contact_sup:
-                Toast.makeText(this, "contact was selected", Toast.LENGTH_SHORT).show();
+               // Toast.makeText(this, "contact was selected", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(MainActivity.this , ContactSupport.class));
+                finish();
                 return true;
 
             default:

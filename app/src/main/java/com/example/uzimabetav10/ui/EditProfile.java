@@ -83,6 +83,8 @@ public class EditProfile extends AppCompatActivity  implements DatePickerDialog.
 
 
 
+
+
         Toolbar toolbar = findViewById(R.id.single_post_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(" Edit your Profile");
