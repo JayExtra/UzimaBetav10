@@ -27,6 +27,7 @@ import com.androidstudy.daraja.model.LNMExpress;
 import com.androidstudy.daraja.model.LNMResult;
 import com.androidstudy.daraja.util.Env;
 import com.androidstudy.daraja.util.TransactionType;
+import com.bumptech.glide.Glide;
 import com.example.uzimabetav10.R;
 import com.example.uzimabetav10.mpesa.MpesaListener;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -34,6 +35,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -60,14 +62,14 @@ public class CoverPayment extends AppCompatActivity  implements MpesaListener {
     String pointsEarned = null;
     private TextView amountText , dteText , warningText , expiryDateTv;
     private CardView warningCard , infoCard;
-    TextView dateText,transTxt, amntTxt , phnNum;
-    Button okayButton;
+    TextView dateText,transTxt, amntTxt , phnNum , dateIss , nameTxt , contactTxt , emailTxt , statusTxt , expDateTxtx ,refTxt ;
+    Button okayButton , closeDialog;
     private EditText numText;
-    private Button payNow;
+    private Button payNow , viewCover;
     private ImageView cancelImg;
     String value;
     int value2;
-    Dialog myDialog;
+    Dialog myDialog , myDialog2;
     private Button buttonProceed;
     Daraja daraja;
     public static MpesaListener mpesaListener;
@@ -75,6 +77,7 @@ public class CoverPayment extends AppCompatActivity  implements MpesaListener {
     private FirebaseAuth mAuth;
     private FirebaseFirestore firebaseFirestore;
     String user_id;
+    ImageView userImage;
 
     String TAG = "CoverPayment:";
 
@@ -132,6 +135,7 @@ public class CoverPayment extends AppCompatActivity  implements MpesaListener {
 
 
         myDialog=new Dialog(this);
+        myDialog2=new Dialog(this);
 
 
         amountText = findViewById(R.id.amount_text);
@@ -142,6 +146,7 @@ public class CoverPayment extends AppCompatActivity  implements MpesaListener {
         infoCard = findViewById(R.id.info_card);
         expiryDateTv = findViewById(R.id.date_status_txt);
         warningText = findViewById(R.id.warning_text);
+        viewCover = findViewById(R.id.button_view_status);
 
 
 
@@ -189,6 +194,84 @@ public class CoverPayment extends AppCompatActivity  implements MpesaListener {
 
             }
         });
+
+
+        viewCover.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                myDialog2.setContentView(R.layout.cover_popup);
+                dateIss = (TextView) myDialog2.findViewById(R.id.date_txt);
+                nameTxt = (TextView) myDialog2.findViewById(R.id.name_txt);
+                contactTxt = (TextView) myDialog2.findViewById(R.id.contact_txt);
+                emailTxt = (TextView) myDialog2.findViewById(R.id.email_txt);
+                statusTxt = (TextView) myDialog2.findViewById(R.id.status_txt);
+                expDateTxtx = (TextView) myDialog2.findViewById(R.id.exp_date_txt);
+                userImage = (ImageView) myDialog2.findViewById(R.id.user_img);
+                refTxt= (TextView) myDialog2.findViewById(R.id.ref_txt);
+                closeDialog = (Button) myDialog2.findViewById(R.id.button_close_dialog);
+
+
+
+                DocumentReference docRef = firebaseFirestore.collection("Members").document(user_id);
+                docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document.exists()) {
+                                Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                                String refNo = document.getId();
+                                String name = task.getResult().getString("name");
+                                String image = task.getResult().getString("image");
+                                Date issueDate = task.getResult().getTimestamp("timestamp").toDate();
+                                String contact = task.getResult().getString("contact");
+                                String email = task.getResult().getString("email");
+                                String cov_stat = task.getResult().getString("status");
+                                Date expdate = task.getResult().getTimestamp("expiry_date").toDate();
+
+                                Calendar cal = Calendar.getInstance();
+                                SimpleDateFormat month_date = new SimpleDateFormat("dd-MMMM-YYYY");
+                                String offExpDate = month_date.format(expdate);
+                                String issueDate2 = month_date.format(issueDate);
+
+                                refTxt.setText(refNo);
+                                Glide.with(CoverPayment.this).load(image).into(userImage);
+                                dateIss.setText(issueDate2);
+                                nameTxt.setText(name);
+                                contactTxt.setText(contact);
+                                emailTxt.setText(email);
+                                statusTxt.setText(cov_stat);
+                                expDateTxtx.setText(offExpDate);
+
+                            } else {
+                                Log.d(TAG, "No such document");
+                            }
+                        } else {
+                            Log.d(TAG, "get failed with ", task.getException());
+                        }
+                    }
+                });
+
+                closeDialog.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        myDialog2.dismiss();
+                    }
+                });
+
+
+                myDialog2.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                myDialog2.show();
+
+            }
+
+
+        });
+
+
+
+
 
 
 
@@ -566,6 +649,18 @@ public class CoverPayment extends AppCompatActivity  implements MpesaListener {
         SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy", Locale.getDefault());
         String formattedDate = df.format(exp_date);
        dteText.setText(formattedDate);
+
+
+    }
+
+    public void getCoverDetails(){
+
+
+
+
+
+
+
 
 
     }

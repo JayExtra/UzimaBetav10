@@ -16,6 +16,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.AdapterView;
@@ -311,6 +312,9 @@ public class EditProfile extends AppCompatActivity  implements DatePickerDialog.
                     userMap.put("emergency_contact",em_contact);
 
 
+                    final String img_url  = download_uri.toString();
+
+
 
 
 
@@ -320,6 +324,8 @@ public class EditProfile extends AppCompatActivity  implements DatePickerDialog.
                                 @Override
                                 public void onSuccess(Void aVoid) {
                                     Toast.makeText(EditProfile.this,"Profile Updated",Toast.LENGTH_LONG).show();
+
+                                    updateMembership(name , img_url  , phone , email ,countySelected);
 
                                    startActivity(new Intent(EditProfile.this,Profile.class));
 
@@ -372,6 +378,8 @@ public class EditProfile extends AppCompatActivity  implements DatePickerDialog.
                     userMap.put("location",location);
                     userMap.put("emergency_contact",em_contact);
 
+                    final String img_url = download_uri.toString();
+
 
 
                     firebaseFirestore.collection("users").document(user_id)
@@ -380,6 +388,7 @@ public class EditProfile extends AppCompatActivity  implements DatePickerDialog.
                                 @Override
                                 public void onSuccess(Void aVoid) {
                                     Toast.makeText(EditProfile.this,"Profile Updated",Toast.LENGTH_LONG).show();
+                                    updateMembership(name , img_url  , phone , email ,countySelected);
 
                                     startActivity(new Intent(EditProfile.this,Profile.class));
 
@@ -418,6 +427,37 @@ public class EditProfile extends AppCompatActivity  implements DatePickerDialog.
 
 
 
+
+
+
+    }
+
+    private void updateMembership(String name, String img_url, String phone, String email, String countySelected) {
+        DocumentReference washingtonRef = firebaseFirestore.collection("Members").document(user_id);
+
+// Set the "isCapital" field of the city 'DC'
+        washingtonRef
+                .update("name", name,
+                        "image" , img_url,
+                        "contact" , phone,
+                        "email" , email,
+                        "county" , countySelected)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("updateMembership", "DocumentSnapshot successfully updated!");
+
+
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("updateMembership", "DocumentSnapshot failed update!"+e.getMessage());
+
+
+                    }
+                });
 
 
 
