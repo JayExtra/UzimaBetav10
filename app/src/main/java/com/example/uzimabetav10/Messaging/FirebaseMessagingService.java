@@ -19,12 +19,14 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
 import com.google.gson.Gson;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 
 public class FirebaseMessagingService extends com.google.firebase.messaging.FirebaseMessagingService{
 
     @Override
-    public void onMessageReceived(RemoteMessage remoteMessage) {
+    public void onMessageReceived(@NotNull RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
 
 
@@ -32,19 +34,13 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
 
         FirebaseApp.initializeApp(this);
 
-        String payload = remoteMessage.getData().get("payload");
+        String mpesa = remoteMessage.getData().get("mpesa");
 
         Gson gson = new Gson();
 
-        MpesaResponse mpesaResponse = gson.fromJson(payload, MpesaResponse.class);
-        String id = mpesaResponse.getBody().getStkCallback().getCheckoutRequestID();
 
+        if(mpesa==null){
 
-        if (mpesaResponse.getBody().getStkCallback().getResultCode() != 0) {
-
-            String reason = mpesaResponse.getBody().getStkCallback().getResultDesc();
-
-            CoverPayment.mpesaListener.sendFailed(reason);
 
             String messageTitle = remoteMessage.getNotification().getTitle();
             String messageBody = remoteMessage.getNotification().getBody();
@@ -86,43 +82,65 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
 
 
 
-        } else {
-
-            List<Item> list = mpesaResponse.getBody().getStkCallback().getCallbackMetadata().getItem();
-
-            String receipt = "";
-            String date = "";
-            String phone = "";
-            String amount = "";
 
 
-            for (Item item : list) {
+        }else{
 
-                if (item.getName().equals("MpesaReceiptNumber")) {
-                    receipt = item.getValue();
+            MpesaResponse mpesaResponse = gson.fromJson(mpesa, MpesaResponse.class);
+            String id = mpesaResponse.getBody().getStkCallback().getCheckoutRequestID();
+
+            if (mpesaResponse.getBody().getStkCallback().getResultCode() != 0) {
+
+                String reason = mpesaResponse.getBody().getStkCallback().getResultDesc();
+
+                CoverPayment.mpesaListener.sendFailed(reason);
+
+
+            } else {
+
+                List<Item> list = mpesaResponse.getBody().getStkCallback().getCallbackMetadata().getItem();
+
+                String receipt = "";
+                String date = "";
+                String phone = "";
+                String amount = "";
+
+
+                for (Item item : list) {
+
+                    if (item.getName().equals("MpesaReceiptNumber")) {
+                        receipt = item.getValue();
+                    }
+                    if (item.getName().equals("TransactionDate")) {
+                        date = item.getValue();
+                    }
+                    if (item.getName().equals("PhoneNumber")) {
+                        phone = item.getValue();
+
+                    }
+                    if (item.getName().equals("Amount")) {
+                        amount = item.getValue();
+                    }
+
                 }
-                if (item.getName().equals("TransactionDate")) {
-                    date = item.getValue();
-                }
-                if (item.getName().equals("PhoneNumber")) {
-                    phone = item.getValue();
-
-                }
-                if (item.getName().equals("Amount")) {
-                    amount = item.getValue();
-                }
-
+                CoverPayment.mpesaListener.sendSuccesfull(amount, phone, date, receipt);
+                Log.d(
+                        "MetaData",
+                        "\nReceipt: $receipt\nDate: ${getDate(date)}\nPhone: $phone\nAmount: $amount"
+                );
+                //Log.d("NewDate", getDate(date.toLong()))
             }
-            CoverPayment.mpesaListener.sendSuccesfull(amount, phone, date, receipt);
-            Log.d(
-                    "MetaData",
-                    "\nReceipt: $receipt\nDate: ${getDate(date)}\nPhone: $phone\nAmount: $amount"
-            );
-            //Log.d("NewDate", getDate(date.toLong()))
+
+
+
+            FirebaseMessaging.getInstance()
+                    .unsubscribeFromTopic(id);
+
+
         }
 
-        FirebaseMessaging.getInstance()
-                .unsubscribeFromTopic(id);
+
+
 
 
 

@@ -42,6 +42,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -198,6 +199,8 @@ public class EditProfile extends AppCompatActivity  implements DatePickerDialog.
         final String location = locationText.getText().toString();
         //final String status = "online";
 
+        //String current_id = mAuth.getCurrentUser().getUid()
+
 
 
         if(!TextUtils.isEmpty(name)&&!TextUtils.isEmpty(email)&&!TextUtils.isEmpty(phone)&&mainImageURI!=null
@@ -296,6 +299,8 @@ public class EditProfile extends AppCompatActivity  implements DatePickerDialog.
                 @Override
                 public void onSuccess(Uri download_uri) {
 
+                    String token_id = FirebaseInstanceId.getInstance().getToken();
+
 
                     Map<String, Object> userMap= new HashMap<>();
 
@@ -310,6 +315,7 @@ public class EditProfile extends AppCompatActivity  implements DatePickerDialog.
                     userMap.put("county",countySelected);
                     userMap.put("location",location);
                     userMap.put("emergency_contact",em_contact);
+                    userMap.put("token_id" , token_id);
 
 
                     final String img_url  = download_uri.toString();
@@ -362,6 +368,8 @@ public class EditProfile extends AppCompatActivity  implements DatePickerDialog.
                 public void onSuccess(Uri download_uri) {
                     // Got the download URL for profile picture
 
+                    String token_id = FirebaseInstanceId.getInstance().getToken();
+
                     download_uri=mainImageURI;
 
                     Map<String, Object> userMap= new HashMap<>();
@@ -377,6 +385,7 @@ public class EditProfile extends AppCompatActivity  implements DatePickerDialog.
                     userMap.put("county",countySelected);
                     userMap.put("location",location);
                     userMap.put("emergency_contact",em_contact);
+                    userMap.put("token_id" , token_id);
 
                     final String img_url = download_uri.toString();
 
